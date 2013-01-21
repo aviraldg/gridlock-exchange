@@ -4,23 +4,28 @@ __author__ = 'aviraldg'
 
 from google.appengine.ext import ndb
 
-class Price(ndb.model):
+class UserProfile(ndb.Model):
+    user_id = ndb.StringProperty(indexed=True)
+    bio = ndb.StringProperty(default="")
+
+def price_value_validator(property, value):
+    if value <= 0:
+        raise ValueError('Price value must be nonzero')
+
+    return int(value)
+
+class Price(ndb.Model):
     # Fixed-point price
     fixed_value = ndb.IntegerProperty(required=True,
-        validator=Price.value_validator)
+        validator=price_value_validator)
     value = ndb.ComputedProperty(lambda self: self.fixed_value/100)
     currency = ndb.TextProperty()
 
-    @staticmethod
-    def value_validator(property, value):
-        if value <= 0:
-            raise ValueError('Price value must be nonzero')
-
-        return int(value)
-
 class Item(ndb.Model):
-    title = ndb.StringProperty()
+    title = ndb.StringProperty(required=True)
     slug = ndb.StringProperty(required=True, indexed=True)
-    description = ndb.StringProperty()
+    seller_id = ndb.StringProperty(required=True)
+    description = ndb.StringProperty(default=u'')
     created = ndb.DateTimeProperty(auto_now_add=True)
-    price = ndb.StructuredProperty(Price)
+    expiry = ndb.DateTimeProperty()
+    price = ndb.StructuredProperty(Price, required=True)
