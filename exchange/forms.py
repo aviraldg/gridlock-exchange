@@ -3,8 +3,8 @@ __author__ = 'aviraldg'
 from flask.ext import wtf
 
 class LoginForm(wtf.Form):
-    username = wtf.TextField('Username')
-    password = wtf.PasswordField('Password')
+    username = wtf.TextField('Username', validators=(wtf.required(),))
+    password = wtf.PasswordField('Password', validators=(wtf.required(),))
     remember = wtf.BooleanField('Remember me')
 
 
