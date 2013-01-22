@@ -9,3 +9,5 @@ DEBUG = True
 GA_ID = None
 
 SECRET_KEY = "Secret Key"
+
+CSRF_ENABLED = True

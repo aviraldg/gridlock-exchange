@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method=post action="{{ url_for('register') }}">
+        <table>
+            {% for field in form %}
+                {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
+                    {{ field }}
+                {% else %}
+                    <tr>
+                        <td>{{ field.label }}</td>
+                        <td>{{ field }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="submit" value="Register"></td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

@@ -5,7 +5,7 @@ __author__ = 'aviraldg'
 from google.appengine.ext import ndb
 from pbkdf2 import crypt
 from flask import config
-from . import login_manager
+from . import app, login_manager
 
 class UserProfile(ndb.Model):
     bio = ndb.StringProperty(default="")
@@ -18,7 +18,7 @@ class User(ndb.Model):
     password = ndb.StringProperty()
     name = ndb.StringProperty()
     email = ndb.StringProperty()
-    active = ndb.BooleanProperty()
+    active = ndb.BooleanProperty(default=True)
     profile = ndb.StructuredProperty(UserProfile)
 
     @staticmethod
@@ -37,6 +37,12 @@ class User(ndb.Model):
         else:
             return None
 
+    def __str__(self):
+        return self.username
+
+    def __repr__(self):
+        return 'User: %s' % str(self)
+
     def is_authenticated(self):
         return
 
@@ -47,14 +53,14 @@ class User(ndb.Model):
         return False
 
     def get_id(self):
-        return unicode(self.key)
+        return unicode(self.key.id())
 
     def set_password(self, raw_password):
         """
         Hash, salt and save raw_password for the user using PBKDF2.
         """
 
-        salt = crypt(config.SECRET_KEY, iterations=self.CRYPTO_ITER)
+        salt = crypt(app.config['SECRET_KEY'], iterations=self.CRYPTO_ITER)
         self.password = crypt(raw_password, salt, self.CRYPTO_ITER)
 
     def check_password(self, raw_password):
@@ -64,6 +70,8 @@ class User(ndb.Model):
         from .utils import secure_compare
 
         algo, iterations, salt = self.password.split('$')[1:4]
+        # the number of iterations is stored in base16
+        iterations = int(iterations, 16)
 
         if algo != 'p5k2':
             raise ValueError('check_password can\'t handle %s' % algo)
@@ -72,8 +80,8 @@ class User(ndb.Model):
             salt, iterations))
 
 @login_manager.user_loader
-def load_user(user_key):
-    return User.get(user_key)
+def load_user(user_id):
+    return User.get_by_id(int(user_id))
 
 
 def price_value_validator(property, value):
@@ -97,5 +105,5 @@ class Item(ndb.Model):
     seller_id = ndb.StringProperty(required=True)
     description = ndb.StringProperty(default=u'')
     created = ndb.DateTimeProperty(auto_now_add=True)
-    expiry = ndb.DateTimeProperty()
+    expiry = ndb.DateTimeProperty(default=None)
     price = ndb.StructuredProperty(Price, required=True)
