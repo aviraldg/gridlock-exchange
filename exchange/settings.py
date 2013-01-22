@@ -1,6 +1,6 @@
-'''
+"""
 Flask & Exchange settings.
-'''
+"""
 
 DEBUG = True
 
