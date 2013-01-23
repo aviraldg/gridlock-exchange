@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    {% with action = url_for('item_create') %}
+        {% include "item/form.fragment.html" %}
+    {% endwith %}
+{% endblock %}

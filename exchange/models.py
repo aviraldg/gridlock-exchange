@@ -4,7 +4,8 @@ __author__ = 'aviraldg'
 
 from google.appengine.ext import ndb
 from pbkdf2 import crypt
-from flask import config
+from flask import config, url_for
+from babel.numbers import format_currency
 from . import app, login_manager
 
 class UserProfile(ndb.Model):
@@ -98,6 +99,13 @@ class Price(ndb.Model):
     value = ndb.ComputedProperty(lambda self: self.fixed_value/100)
     currency = ndb.TextProperty()
 
+    def __str__(self):
+        return self.get_formatted_value()
+
+    def get_formatted_value(self):
+        # TODO: Don't hardcode the locale
+        return format_currency(self.value, self.currency, locale='en_US')
+
 
 class Item(ndb.Model):
     title = ndb.StringProperty(required=True)
@@ -107,3 +115,12 @@ class Item(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     expiry = ndb.DateTimeProperty(default=None)
     price = ndb.StructuredProperty(Price, required=True)
+
+    def __str__(self):
+        return str(self.slug)
+
+    def __repr__(self):
+        return 'Item: %s' % str(self)
+
+    def url(self):
+        return url_for('item', id=self.key.id(), slug=self.slug)

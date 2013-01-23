@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form, TextField, PasswordField, TextAreaField, \
     BooleanField, email, required, length
 from flask.ext.wtf import html5
+from wtforms.validators import number_range
 
 __author__ = 'aviraldg'
 __all__ = ('RegisterForm', 'LoginForm', 'UserProfileForm')
@@ -24,3 +25,9 @@ class LogoutForm(Form):
 
 class UserProfileForm(Form):
     bio = TextAreaField("bio")
+
+class ItemForm(Form):
+    title = TextField('Title', validators=[required()])
+    description = TextAreaField('Description', validators=[required()])
+    price = html5.IntegerField('Price', validators=[required(),
+                                                    number_range(min=1)])

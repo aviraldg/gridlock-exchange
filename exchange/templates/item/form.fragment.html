@@ -1,0 +1,21 @@
+<form method="post" action="{{ action }}">
+    <table>
+        {{ form.csrf_token }}
+        <tr>
+            <td>{{ form.title.label }}</td>
+            <td>{{ form.title }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.description.label }}</td>
+            <td>{{ form.description }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.price.label }}</td>
+            <td>{{ form.price }}</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type="submit" value="Create Item"></td>
+        </tr>
+    </table>
+</form>

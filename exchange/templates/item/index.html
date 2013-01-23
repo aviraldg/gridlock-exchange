@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+{% for item in items %}
+    {% include "item/item.fragment.html" %}
+{% endfor %}
+{% endblock %}

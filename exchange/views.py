@@ -1,3 +1,4 @@
+from exchange.forms import ItemForm
 from wtforms import ValidationError
 
 __author__ = 'aviraldg'
@@ -7,7 +8,8 @@ from flask import request, render_template, flash, redirect, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from google.appengine.api import users
 from . import app
-from .models import User
+from .models import User, Item, Price
+from .utils import slugify
 import forms
 
 @app.route('/')
@@ -82,4 +84,36 @@ def profile(profile_id = None):
         'form': forms.UserProfileForm()
     }
 
-    return render_template("profile.html", **content)
+    return render_template('profile.html', **content)
+
+
+@login_required
+@app.route('/item/create', methods=['GET', 'POST'])
+def item_create():
+    form = ItemForm()
+
+    if form.validate_on_submit():
+        item = Item()
+        item.title = form.title.data
+        item.seller_id = current_user.get_id()
+        item.slug = slugify(form.title.data)
+        item.description = form.description.data
+        item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        item.put()
+
+    return render_template('item/create.html', form=form)
+
+@app.route('/item/')
+def item_index():
+    items, cursor, more = Item.query().fetch_page(10)
+    return render_template('item/index.html', items=items)
+
+@app.route('/item/<int:id>/<string:slug>')
+def item(id, slug):
+    item = Item.get_by_id(id)
+
+    if item is None or item.slug != slug:
+        # TODO: need a better (specific) page for item/404
+        abort(404)
+
+    return render_template('item/item.html', item=item)
