@@ -14,13 +14,7 @@ import forms
 
 @app.route('/')
 def index():
-    content = {
-        'login': url_for('login', next=request.url),
-        'logout_form': forms.LogoutForm(),
-        'name': current_user.username
-    }
-
-    return render_template('index.html', **content)
+    return redirect(url_for('item_index'))
 
 @app.route('/auth/register', methods=('GET', 'POST'))
 def register():
