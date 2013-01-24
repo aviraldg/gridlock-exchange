@@ -1,0 +1,20 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="{{ url_for('index') }}">Gridlock Exchange</a>
+            <div class="nav-collapse collapse">
+                <p class="navbar-text pull-right">
+                    Logged in as <a href="#" class="navbar-link">{{ current_user.username }}</a>
+                </p>
+                <ul class="nav">
+                    <li><a href="{{ url_for('item_index') }}">Items</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

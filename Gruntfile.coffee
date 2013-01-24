@@ -43,6 +43,7 @@ module.exports = (grunt) ->
         files: [
           src: ['static-src/css/normalize.css',
             'static-src/css/main.css',
+            'static-src/css/bootstrap.css',
             'static-src/css/bootstrap-responsive.css']
           dest: 'static/css/lib.min.css',
         ,
