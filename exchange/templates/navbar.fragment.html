@@ -8,8 +8,16 @@
             </a>
             <a class="brand" href="{{ url_for('index') }}">Gridlock Exchange</a>
             <div class="nav-collapse collapse">
+                {% if logout_form %}
+                    <form method="post" action="{{ url_for('logout') }}" class="navbar-form pull-right">
+                        {{ logout_form.csrf_token }}
+                        <input type="submit" class="btn btn-inverse" value="Logout">
+                    </form>
+                {% endif %}
                 <p class="navbar-text pull-right">
+                    {% if current_user.is_authenticated() %}
                     Logged in as <a href="#" class="navbar-link">{{ current_user.username }}</a>
+                    {% endif %}
                 </p>
                 <ul class="nav">
                     <li><a href="{{ url_for('item_index') }}">Items</a></li>

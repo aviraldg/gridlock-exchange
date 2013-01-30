@@ -45,7 +45,7 @@ class User(ndb.Model):
         return 'User: %s' % str(self)
 
     def is_authenticated(self):
-        return
+        return True
 
     def is_active(self):
         return self.active

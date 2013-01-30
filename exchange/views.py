@@ -40,10 +40,10 @@ def login():
         user = User.authenticate(login_form.username.data,
             login_form.password.data)
         if not user:
-            flash('Incorrect username or password')
+            flash('Incorrect username or password', 'error')
         else:
             login_user(user, login_form.remember.data)
-            flash('You\'ve successfully been logged in!')
+            flash('You\'ve successfully been logged in!', 'success')
             return redirect(request.args.get('next') or url_for('index'))
 
 
@@ -58,12 +58,14 @@ def login():
 def logout():
     form = forms.LogoutForm()
     try:
-        if form.validate_csrf_token(form.csrf_token):
+        if form.validate_on_submit():
             logout_user()
+        else:
+            abort(403)
     except ValidationError:
         abort(403)
 
-    flash('You have successfully been logged out.')
+    flash('You have successfully been logged out.', 'success')
     return redirect(url_for('login'))
 
 @app.route('/profile')

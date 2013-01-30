@@ -8,4 +8,5 @@ app.config.from_object('exchange.settings')
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+import contextproc
 import views

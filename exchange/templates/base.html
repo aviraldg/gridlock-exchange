@@ -19,15 +19,20 @@
         <![endif]-->
 
         {% include "navbar.fragment.html" %}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for category, message in messages %}
+                {% if category == "message" %}
+                    <div class="alert alert-info">
+                {% else %}
+                    <div class="alert alert-{{ category }}">
+                {% endif %}
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        {{ message }}
+                    </div>
+            {% endfor %}
         {% endwith %}
+
         {% block content %}
         {% endblock %}
 
