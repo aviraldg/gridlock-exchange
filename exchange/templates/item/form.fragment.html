@@ -1,21 +1,27 @@
-<form method="post" action="{{ action }}">
-    <table>
-        {{ form.csrf_token }}
-        <tr>
-            <td>{{ form.title.label }}</td>
-            <td>{{ form.title }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.description.label }}</td>
-            <td>{{ form.description }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.price.label }}</td>
-            <td>{{ form.price }}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td><input type="submit" value="Create Item"></td>
-        </tr>
-    </table>
+<form class="form-horizontal" method="post" action="{{ action }}">
+    {{ form.csrf_token }}
+    {% for field in form %}
+        {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
+            {{ field }}
+        {% else %}
+            <div class="control-group {% if field.errors %}error{% endif %}">
+                {{ field.label(class="control-label") }}
+                <div class="controls">
+                    {{ field }}
+                    <span class="help-inline">
+                        {{ field.errors|join(', ') }}
+                    </span>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <div class="form-actions">
+        {% if crud_method == "create" %}
+            <input class="btn btn-primary" type="submit" value="Create Item">
+            <a class="btn" href="{{ url_for('item_index') }}">Cancel</a>
+        {% elif crud_method == "update" %}
+            <input class="btn btn-primary" type="submit" value="Update Item">
+            <a class="btn" href="{{ url_for('item', id=id, slug=slug) }}">Cancel</a>
+        {% endif %}
+    </div>
 </form>

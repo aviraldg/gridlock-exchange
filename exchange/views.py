@@ -118,3 +118,29 @@ def item(id, slug):
         abort(404)
 
     return render_template('item/item.html', item=item)
+
+@login_required
+@app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
+def item_update(id, slug):
+    item = Item.get_by_id(id)
+
+    if item is None or item.slug != slug:
+        abort(404)
+
+    if item.seller_id != current_user.get_id():
+        abort(403)
+
+    form = ItemForm(title=item.title, description=item.description,
+        price=item.price.fixed_value/100)
+
+    if form.validate_on_submit():
+        item.title = form.title.data
+        item.description = form.description.data
+        item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        item.put()
+
+        flash('Item updated', 'success')
+
+        return redirect(url_for('item', id=id, slug=slug))
+
+    return render_template('item/update.html', form=form, id=id, slug=slug)

@@ -133,7 +133,6 @@ class Item(ndb.Model):
         for field in self._search_fields:
             keywords = keywords.union(Item._keywordize(getattr(self, field)))
         self.keywords = [Keyword(keyword=__) for __ in keywords]
-        print self.keywords
 
     def __str__(self):
         return str(self.slug)
