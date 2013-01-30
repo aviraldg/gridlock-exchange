@@ -92,6 +92,9 @@ def price_value_validator(property, value):
     return int(value)
 
 
+class Keyword(ndb.Model):
+    keyword = ndb.StringProperty(required=True)
+
 class Price(ndb.Model):
     # Fixed-point price
     fixed_value = ndb.IntegerProperty(required=True,
@@ -115,6 +118,22 @@ class Item(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     expiry = ndb.DateTimeProperty(default=None)
     price = ndb.StructuredProperty(Price, required=True)
+
+    _search_fields = ('title', 'description')
+    keywords = ndb.StructuredProperty(Keyword, repeated=True)
+
+    @staticmethod
+    def _keywordize(value):
+        from .utils import punct_re
+        value = str(value)
+        return punct_re.split(value.strip().lower())
+
+    def _pre_put_hook(self):
+        keywords = set()
+        for field in self._search_fields:
+            keywords = keywords.union(Item._keywordize(getattr(self, field)))
+        self.keywords = [Keyword(keyword=__) for __ in keywords]
+        print self.keywords
 
     def __str__(self):
         return str(self.slug)

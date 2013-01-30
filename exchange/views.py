@@ -7,6 +7,7 @@ import flask
 from flask import request, render_template, flash, redirect, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from google.appengine.api import users
+from google.appengine.ext import ndb
 from . import app
 from .models import User, Item, Price
 from .utils import slugify
@@ -101,7 +102,11 @@ def item_create():
 
 @app.route('/item/')
 def item_index():
-    items, cursor, more = Item.query().fetch_page(10)
+    if 'q' in request.args:
+        query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
+    else:
+        query = Item.query()
+    items, cursor, more = query.fetch_page(10)
     return render_template('item/index.html', items=items)
 
 @app.route('/item/<int:id>/<string:slug>')

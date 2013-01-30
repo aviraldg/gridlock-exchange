@@ -11,8 +11,12 @@
                 <ul class="nav">
                     <li><a href="{{ url_for('item_index') }}">Items</a></li>
                 </ul>
-                <form class="navbar-search pull-left" action="">
-                    <input type="text" class="search-query span2" placeholder="Search" autocomplete="off">
+                <form class="navbar-search pull-left" method="get" action="{{ url_for('item_index') }}">
+                    <input type="text" name="q" class="search-query span2" placeholder="Search" autocomplete="off"
+                            {% if 'q' in request.args %}
+                            value="{{ request.args['q'] }}"
+                            {% endif %}
+                            >
                 </form>
                 {% if logout_form %}
                     <form method="post" action="{{ url_for('logout') }}" class="navbar-form pull-right">
