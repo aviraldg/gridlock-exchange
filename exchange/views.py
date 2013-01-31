@@ -144,3 +144,22 @@ def item_update(id, slug):
         return redirect(url_for('item', id=id, slug=slug))
 
     return render_template('item/update.html', form=form, id=id, slug=slug)
+
+@login_required
+@app.route('/item/<int:id>/<string:slug>/delete', methods=['POST'])
+def item_delete(id, slug):
+    item = Item.get_by_id(id)
+
+    if item is None or item.slug != slug:
+        abort(404)
+
+    if item.seller_id != current_user.get_id():
+        abort(403)
+
+    form = forms.ItemDeleteForm()
+    if form.validate_on_submit():
+        item.key.delete()
+        flash('The item has been deleted successfully.', 'success')
+        return redirect(url_for('item_index'))
+    else:
+        abort(403)
