@@ -9,4 +9,5 @@
             <input type="submit" class="btn btn-success" value="Activate">
         {% endif %}
     </form>
+    <a class="btn btn-danger" href="{{ url_for('user_delete', id=user.get_id(), username=user.username) }}">Delete</a>
 {% endif %}

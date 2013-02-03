@@ -1,6 +1,8 @@
 from flask.ext.wtf import Form, TextField, PasswordField, TextAreaField, \
     BooleanField, email, required, length
 from flask.ext.wtf import html5
+from flask.ext.login import current_user
+from wtforms import ValidationError
 from wtforms.validators import number_range
 
 __author__ = 'aviraldg'
@@ -37,3 +39,10 @@ class ItemDeleteForm(Form):
 
 class UserDeactivateForm(Form):
     pass # This form is only used for CSRF protection.
+
+class UserDeleteForm(Form):
+    username = TextField('Username', validators=[required()])
+
+    def validate_username(self, field):
+        if field.data != current_user.username:
+            raise ValidationError('The username entered must match your username exactly.')

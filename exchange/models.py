@@ -111,6 +111,9 @@ class User(ndb.Model):
     def url(self):
         return url_for('user', id=self.get_id(), username=self.username)
 
+    def delete(self):
+        self.key.delete()
+
 
 class CustomAnonymousUser(AnonymousUser):
     def has_role(self, role):

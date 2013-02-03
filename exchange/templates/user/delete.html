@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Confirm Deletion of Your Account</h1>
+<div class="alert alert-danger">
+    <strong>Warning!</strong> This process is <em>permanent</em> and <em>irreversible</em>.
+</div>
+<form method="POST" class="form-horizontal">
+    {% for field in user_delete_form %}
+        {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
+            {{ field }}
+        {% else %}
+            <div class="control-group {% if field.errors %}error{% endif %}">
+                {{ field.label(class="control-label") }}
+                <div class="controls">
+                    {{ field }}
+                    <span class="help-inline">
+                        {% if field.description %}
+                            {{ field.description }}
+                        {% else %}
+                            {{ field.errors|join(', ') }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <div class="form-actions">
+        <input type="submit" class="btn btn-danger" value="Delete">
+        <a class="btn" href="{{ current_user.url() }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

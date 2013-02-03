@@ -193,3 +193,24 @@ def user_deactivate(id, username):
         return redirect(url_for('user', id=id, username=username))
     else:
         abort(403)
+
+@app.route('/user/<int:id>/<string:username>/delete', methods=['GET', 'POST'])
+@condition_required(lambda id, username: User.get_or_404(id, username).get_id() == current_user.get_id())
+def user_delete(id, username):
+    form = forms.UserDeleteForm()
+    user = User.get_or_404(id, username)
+
+    if current_user.has_role('admin'):
+        flash('Sorry, but administrators cannot delete their accounts.', 'error')
+        flash('Please ask another administrator to deactivate your account, or make you a regular user.', 'info')
+        return redirect(url_for('user', id=id, username=username))
+
+    if form.validate_on_submit():
+        logout_user()
+        user.delete()
+
+        flash('Your account has successfully been deleted.')
+
+        return redirect(url_for('index'))
+
+    return render_template('user/delete.html', user=user, user_delete_form=form)
