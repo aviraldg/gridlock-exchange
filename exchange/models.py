@@ -170,14 +170,14 @@ class Item(ndb.Model):
         return punct_re.split(value.strip().lower())
 
     @staticmethod
-    def get_or_404(self, id, slug):
+    def get_or_404(id, slug):
         """
         Get the Item if it exists, or abort with a 404.
         :param id:
         :param slug:
         :return: the item
         """
-        item = self.get_by_id(id)
+        item = Item.get_by_id(id)
 
         if item is None or item.slug != slug:
             abort(404)
@@ -190,6 +190,9 @@ class Item(ndb.Model):
             keywords = keywords.union(Item._keywordize(getattr(self, field)))
         self.keywords = [Keyword(keyword=__) for __ in keywords]
 
+    def _post_put_hook(self, future):
+       app.logger.info('Item %s/%s updated.' % (self.key.id(), self.slug))
+
     def __str__(self):
         return str(self.slug)
 
@@ -200,4 +203,4 @@ class Item(ndb.Model):
         return url_for('item', id=self.key.id(), slug=self.slug)
 
     def editable_by(self, user):
-        return user.get_id() == self.seller_id or user.has_role('admin')
+        return user.get_id() == unicode(self.seller_id) or user.has_role('admin')

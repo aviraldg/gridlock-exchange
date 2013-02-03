@@ -123,7 +123,7 @@ def item(id, slug):
 def item_update(id, slug):
     item = Item.get_or_404(id, slug)
 
-    if item.editable_by(current_user):
+    if not item.editable_by(current_user):
         abort(403)
 
     form = ItemForm(title=item.title, description=item.description,
