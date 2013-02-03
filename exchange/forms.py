@@ -34,3 +34,6 @@ class ItemForm(Form):
 
 class ItemDeleteForm(Form):
     pass # This form is only used for CSRF protection.
+
+class UserDeactivateForm(Form):
+    pass # This form is only used for CSRF protection.

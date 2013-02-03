@@ -6,7 +6,7 @@
     <p>{{ item.description }}</p>
     <div class="form-actions">
         <a href="{{ item.url() }}" class="btn">Details</a>
-        {% if item.seller_id == current_user.get_id() %}
+        {% if item.editable_by(current_user) %}
             <a class="btn btn-primary" href="{{ url_for('item_update', id=item.key.id(), slug=item.slug) }}">Update</a>
             <form method="post" action="{{ url_for('item_delete', id=item.key.id(), slug=item.slug) }}" style="display: inline">
                 {{ item_delete_form.csrf_token }}

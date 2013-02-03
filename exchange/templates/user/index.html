@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for user in users %}
+        {% include "user/user.fragment.html" %}
+    {% endfor %}
+{% endblock %}

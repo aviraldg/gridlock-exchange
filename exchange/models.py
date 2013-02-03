@@ -1,15 +1,17 @@
+# coding=utf-8
 from __future__ import division
 
 __author__ = 'aviraldg'
 
 from google.appengine.ext import ndb
 from pbkdf2 import crypt
-from flask import config, url_for
+from flask import config, url_for, abort
 from babel.numbers import format_currency
+from flask.ext.login import AnonymousUser
 from . import app, login_manager
 
 class UserProfile(ndb.Model):
-    bio = ndb.StringProperty(default="")
+    bio = ndb.StringProperty(default='')
 
 
 class User(ndb.Model):
@@ -21,6 +23,7 @@ class User(ndb.Model):
     email = ndb.StringProperty()
     active = ndb.BooleanProperty(default=True)
     profile = ndb.StructuredProperty(UserProfile)
+    roles = ndb.StringProperty(repeated=True)
 
     @staticmethod
     def authenticate(username, password):
@@ -37,6 +40,22 @@ class User(ndb.Model):
             return user
         else:
             return None
+
+    @staticmethod
+    def get_or_404(id, username):
+        """
+        Get the User if it exists, otherwise abort with a 404
+        :param id:
+        :param username:
+        :return: the user object
+        """
+
+        user = User.get_by_id(id)
+
+        if not user or user.username != username:
+            abort(404)
+
+        return user
 
     def __str__(self):
         return self.username
@@ -80,20 +99,42 @@ class User(ndb.Model):
         return secure_compare(self.password, crypt(raw_password,
             salt, iterations))
 
+    def has_role(self, role):
+        """
+        Checks if a user has a particular role.
+        """
+        return role in self.roles
+
+    def editable_by(self, user):
+        return user.get_id() == self.get_id() or user.has_role('admin')
+
+    def url(self):
+        return url_for('user', id=self.get_id(), username=self.username)
+
+
+class CustomAnonymousUser(AnonymousUser):
+    def has_role(self, role):
+        return False
+
+    def editable_by(self, user):
+        return False
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get_by_id(int(user_id))
 
 
 def price_value_validator(property, value):
-    if value <= 0:
-        raise ValueError('Price value must be nonzero')
+    if int(value) <= 0:
+        raise ValueError('Price value must be > 0')
 
     return int(value)
 
 
 class Keyword(ndb.Model):
     keyword = ndb.StringProperty(required=True)
+
 
 class Price(ndb.Model):
     # Fixed-point price
@@ -128,6 +169,21 @@ class Item(ndb.Model):
         value = str(value)
         return punct_re.split(value.strip().lower())
 
+    @staticmethod
+    def get_or_404(self, id, slug):
+        """
+        Get the Item if it exists, or abort with a 404.
+        :param id:
+        :param slug:
+        :return: the item
+        """
+        item = self.get_by_id(id)
+
+        if item is None or item.slug != slug:
+            abort(404)
+
+        return item
+
     def _pre_put_hook(self):
         keywords = set()
         for field in self._search_fields:
@@ -142,3 +198,6 @@ class Item(ndb.Model):
 
     def url(self):
         return url_for('item', id=self.key.id(), slug=self.slug)
+
+    def editable_by(self, user):
+        return user.get_id() == self.seller_id or user.has_role('admin')

@@ -11,6 +11,7 @@ from google.appengine.ext import ndb
 from . import app
 from .models import User, Item, Price
 from .utils import slugify
+from .decorators import role_required, condition_required
 import forms
 
 @app.route('/')
@@ -43,8 +44,10 @@ def login():
         if not user:
             flash('Incorrect username or password', 'error')
         else:
-            login_user(user, login_form.remember.data)
-            flash('You\'ve successfully been logged in!', 'success')
+            if not login_user(user, login_form.remember.data):
+                flash('You cannot login using this account as it has been deactivated.', 'warning')
+            else:
+                flash('You\'ve successfully been logged in!', 'success')
             return redirect(request.args.get('next') or url_for('index'))
 
 
@@ -54,8 +57,8 @@ def login():
 
     return render_template('auth/login.html', **context)
 
-@login_required
 @app.route('/auth/logout', methods=['POST'])
+@login_required
 def logout():
     form = forms.LogoutForm()
     try:
@@ -84,8 +87,8 @@ def profile(profile_id = None):
     return render_template('profile.html', **content)
 
 
-@login_required
 @app.route('/item/create', methods=['GET', 'POST'])
+@login_required
 def item_create():
     form = ItemForm()
 
@@ -111,23 +114,16 @@ def item_index():
 
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):
-    item = Item.get_by_id(id)
-
-    if item is None or item.slug != slug:
-        # TODO: need a better (specific) page for item/404
-        abort(404)
+    item = Item.get_or_404(id, slug)
 
     return render_template('item/item.html', item=item)
 
-@login_required
 @app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
+@login_required
 def item_update(id, slug):
-    item = Item.get_by_id(id)
+    item = Item.get_or_404(id, slug)
 
-    if item is None or item.slug != slug:
-        abort(404)
-
-    if item.seller_id != current_user.get_id():
+    if item.editable_by(current_user):
         abort(403)
 
     form = ItemForm(title=item.title, description=item.description,
@@ -145,15 +141,12 @@ def item_update(id, slug):
 
     return render_template('item/update.html', form=form, id=id, slug=slug)
 
-@login_required
 @app.route('/item/<int:id>/<string:slug>/delete', methods=['POST'])
+@login_required
 def item_delete(id, slug):
-    item = Item.get_by_id(id)
+    item = Item.get_or_404(id, slug)
 
-    if item is None or item.slug != slug:
-        abort(404)
-
-    if item.seller_id != current_user.get_id():
+    if not item.editable_by(current_user):
         abort(403)
 
     form = forms.ItemDeleteForm()
@@ -161,5 +154,42 @@ def item_delete(id, slug):
         item.key.delete()
         flash('The item has been deleted successfully.', 'success')
         return redirect(url_for('item_index'))
+    else:
+        abort(403)
+
+
+@app.route('/user/')
+@role_required('admin')
+@login_required
+def user_index():
+    users = User.query().fetch(10)
+
+    return render_template('user/index.html', users=users)
+
+@app.route('/user/<int:id>/<string:username>/')
+def user(id, username):
+    user_object = User.get_or_404(id, username)
+
+    return render_template('user/user.html', user=user_object)
+
+@app.route('/user/<int:id>/<string:username>/deactivate', methods=['POST'])
+@condition_required(lambda id, username: User.get_or_404(id, username).editable_by(current_user))
+def user_deactivate(id, username):
+    form = forms.UserDeactivateForm()
+    user = User.get_or_404(id, username)
+
+    if current_user.has_role('admin') and user == current_user:
+        flash('Sorry, but administrators cannot deactivate their own accounts.', 'error')
+        flash('Please ask another administrator to deactivate your account.', 'info')
+        return redirect(url_for('user', id=id, username=username))
+
+    if form.validate_on_submit():
+        user.active = not user.active
+        user.put()
+
+        # flipped, because we've just activated/deactivated
+        flash('%s has successfully been %sactivated!' % (username, '' if user.active else 'de'), 'success')
+
+        return redirect(url_for('user', id=id, username=username))
     else:
         abort(403)
