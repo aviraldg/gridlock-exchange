@@ -1,9 +1,11 @@
-<article>
+<article itemscope itemtype="http://schema.org/Product">
     <heading>
-        <h1><a href="{{ item.url() }}">{{ item.title }}</a></h1>
+        <h1><a href="{{ item.url() }}" itemprop="name">{{ item.title }}</a></h1>
     </heading>
-    <span class="badge badge-inverse">{{ item.price }}</span>
-    <p>{{ item.description }}</p>
+    <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <span class="badge badge-inverse" itemprop="price">{{ item.price }}</span>
+    </span>
+    <p itemprop="description">{{ item.description }}</p>
     <div class="form-actions">
         <a href="{{ item.url() }}" class="btn">Details</a>
         {% if item.editable_by(current_user) %}
@@ -13,5 +15,8 @@
                 <input type="submit" class="btn btn-danger" value="Delete">
             </form>
         {% endif %}
+        <div class="pull-right">
+            <div class="g-plus" data-action="share" data-annotation="none" data-height="28" data-href="{{ item.url() }}"></div>
+        </div>
     </div>
 </article>
