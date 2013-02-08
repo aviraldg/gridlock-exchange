@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if conversations %}
+        <ul class="nav nav-tabs nav-stacked">
+        {% for conversation in conversations %}
+            <li><a href="{{ url_for('message_conversation', id=conversation.key.id()) }}">{{ conversation.readable_subject }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">
+        Sorry, no conversations to show here.
+        </div>
+    {% endif %}
+{% endblock %}

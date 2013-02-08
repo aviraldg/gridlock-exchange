@@ -1,0 +1,25 @@
+<form class="form-horizontal" method="POST" action="{{ url_for('message_send') }}">
+    {% for field in message_send_form %}
+        {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
+            {{ field }}
+        {% else %}
+            <div class="control-group {% if field.errors %}error{% endif %}">
+                {{ field.label(class="control-label") }}
+                <div class="controls">
+                    {{ field }}
+                    <span class="help-inline">
+                        {% if field.description %}
+                            {{ field.description }}
+                        {% else %}
+                            {{ field.errors|join(', ') }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary" value="Send">
+        <a class="btn" href="javascript:history.back()">Cancel</a>
+    </div>
+</form>

@@ -9,7 +9,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from . import app
-from .models import User, Item, Price
+from .models import User, Item, Price, Conversation, Message
 from .utils import slugify
 from .decorators import role_required, condition_required
 import forms
@@ -214,3 +214,37 @@ def user_delete(id, username):
         return redirect(url_for('index'))
 
     return render_template('user/delete.html', user=user, user_delete_form=form)
+
+@app.route('/message')
+@login_required
+def message_index():
+    c_page = Conversation.list_query(current_user).fetch_page(10)
+    return render_template('message/index.html', conversations=c_page[0], cursor=c_page[1], has_more=c_page[2])
+
+@app.route('/message/send', methods=['GET', 'POST'])
+@login_required
+def message_send():
+    form = forms.MessageSendForm()
+
+    if form.validate_on_submit():
+        to = User.query(User.username.IN(map(lambda un: un.strip(), form.to.data.split(',')))).fetch(1000)
+        Message.send(current_user, to, '', form.message.data)
+
+    return render_template('message/send.html', message_send_form=form)
+
+
+@app.route('/message/conversation/<int:id>')
+@login_required
+def message_conversation(id):
+    c = Conversation.get_by_id(id)
+
+    if not c:
+        abort(404)
+
+    if current_user.key not in c.participant_keys:
+        abort(403)
+
+    page = Message.query(Message.to == c.key).fetch_page(10)
+
+    return render_template('message/conversation.html', conversation=c, messages=page[0], cursor=page[1],
+                           has_more=page[2], message_send_form=forms.MessageSendForm())

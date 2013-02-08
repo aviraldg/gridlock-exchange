@@ -8,6 +8,7 @@ from pbkdf2 import crypt
 from flask import config, url_for, abort
 from babel.numbers import format_currency
 from flask.ext.login import AnonymousUser
+from hashlib import sha512
 from . import app, login_manager
 
 class UserProfile(ndb.Model):
@@ -207,3 +208,77 @@ class Item(ndb.Model):
 
     def editable_by(self, user):
         return user.get_id() == unicode(self.seller_id) or user.has_role('admin')
+
+
+class Conversation(ndb.Model):
+    """
+    A conversation is a group of messages exchanged between a number of participants on a specific topic.
+    """
+
+    # The validator is used to make this behave like a Set
+    participant_keys = ndb.KeyProperty(repeated=True, kind=User)#, validator=lambda prop, value: sorted(set(value)))
+    # Since we can't do exact queries on repeated properties, this sounds like a good workaround.
+    phash = ndb.ComputedProperty(lambda self: Conversation._gen_phash(self.participant_keys))
+    # This can either be the ID of an Item (if the conversation is about an item) or empty (if it's a direct message)
+    readable_subject = ndb.StringProperty(default='')
+    subject = ndb.StringProperty(default='')
+    messages = ndb.KeyProperty(repeated=True, kind='Message')
+    updated = ndb.DateTimeProperty(auto_now=True)
+
+    def _pre_put_hook(self):
+        if self.readable_subject == '':
+            self.readable_subject = 'With %s' % ', '.join(map(lambda u: u.username,
+                                                             ndb.get_multi(self.participant_keys)))
+            if self.subject != '':
+                self.readable_subject += ' about %s' % str(Item.get_by_id(self.subject))
+            else:
+                self.readable_subject += ' (direct message)'
+
+    @staticmethod
+    def _gen_phash(participant_keys):
+        return sha512(','.join(map(lambda k: str(k.id()), participant_keys))).hexdigest()
+
+    @staticmethod
+    def get_or_create(participant_keys, subject):
+        p_keys = list(sorted(set(participant_keys)))
+        phash = Conversation._gen_phash(p_keys)
+        q = Conversation.query(ndb.AND(Conversation.phash == phash, Conversation.subject == subject))
+        q = q.fetch(1)
+
+        if not q:
+            q = Conversation()
+            q.participant_keys=p_keys
+            q.subject=subject
+            q.put()
+        else:
+            q = q[0]
+
+        return q
+
+    @staticmethod
+    def list_query(user):
+        c_query = Conversation.query(Conversation.participant_keys == user.key)
+        return c_query
+
+class Message(ndb.Model):
+    author_key = ndb.KeyProperty(kind=User)
+    @property
+    def author(self):
+        return self.author_key.get()
+    content = ndb.TextProperty()
+    to = ndb.KeyProperty(kind=Conversation)
+    sent = ndb.DateTimeProperty(auto_now_add=True)
+
+    @staticmethod
+    def send(author, to, subject, content):
+        author_key = author.key
+        to_keys = set(map(lambda t:t.key, to))
+
+        conversation = Conversation.get_or_create(to_keys.union({author_key}), subject)
+
+        message = Message(author_key=author_key, to=conversation.key, content=content)
+        message.put()
+
+        conversation.messages.append(message.key)
+        conversation.put()
+

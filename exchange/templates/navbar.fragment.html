@@ -10,6 +10,9 @@
             <div class="nav-collapse collapse navbar-responsive-collapse">
                 <ul class="nav">
                     <li><a href="{{ url_for('item_index') }}">Items</a></li>
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="{{ url_for('message_index') }}">Messages</a></li>
+                    {% endif %}
                     {% if current_user.has_role('admin') %}
                         <li><a href="{{ url_for('user_index') }}">Users</a></li>
                     {% endif %}

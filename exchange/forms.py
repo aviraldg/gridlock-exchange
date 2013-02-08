@@ -46,3 +46,7 @@ class UserDeleteForm(Form):
     def validate_username(self, field):
         if field.data != current_user.username:
             raise ValidationError('The username entered must match your username exactly.')
+
+class MessageSendForm(Form):
+    to = TextField('To', validators=[required()])
+    message = TextAreaField('Message')
