@@ -108,9 +108,14 @@ def item_index():
     # TODO Partial-match search
     if 'q' in request.args:
         query = request.args['q'].strip().lower()
-        results = Item.index.search(search.Query(query))
+
+        try:
+            results = Item.index.search(search.Query(query))
+        except search.QueryError:
+            flash('Sorry, but your query failed.', 'error')
+            return redirect(url_for('index'))
+
         items, cursor, more = results.results[:10], results.cursor, True
-        app.logger.debug(items)
         items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in items])
         #query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
     else:
