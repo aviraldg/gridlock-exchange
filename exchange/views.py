@@ -3,10 +3,9 @@ from wtforms import ValidationError
 
 __author__ = 'aviraldg'
 
-import flask
 from flask import request, render_template, flash, redirect, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from google.appengine.api import users
+from google.appengine.api import search
 from google.appengine.ext import ndb
 from . import app
 from .models import User, Item, Price, Conversation, Message
@@ -105,11 +104,18 @@ def item_create():
 
 @app.route('/item/')
 def item_index():
+    # TODO Paginate results properly, and add restrictions on kinds of queries possible.
+    # TODO Partial-match search
     if 'q' in request.args:
-        query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
+        query = request.args['q'].strip().lower()
+        results = Item.index.search(search.Query(query))
+        items, cursor, more = results.results[:10], results.cursor, True
+        app.logger.debug(items)
+        items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in items])
+        #query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
     else:
         query = Item.query()
-    items, cursor, more = query.fetch_page(10)
+        items, cursor, more = query.fetch_page(10)
     return render_template('item/index.html', items=items)
 
 @app.route('/item/<int:id>/<string:slug>')

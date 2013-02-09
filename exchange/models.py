@@ -4,12 +4,14 @@ from __future__ import division
 __author__ = 'aviraldg'
 
 from google.appengine.ext import ndb
+from google.appengine.api import search
 from pbkdf2 import crypt
 from flask import config, url_for, abort
 from babel.numbers import format_currency
 from flask.ext.login import AnonymousUser
 from hashlib import sha512
 from . import app, login_manager
+
 
 class UserProfile(ndb.Model):
     bio = ndb.StringProperty(default='')
@@ -98,7 +100,7 @@ class User(ndb.Model):
             raise ValueError('check_password can\'t handle %s' % algo)
 
         return secure_compare(self.password, crypt(raw_password,
-            salt, iterations))
+                                                   salt, iterations))
 
     def has_role(self, role):
         """
@@ -143,8 +145,8 @@ class Keyword(ndb.Model):
 class Price(ndb.Model):
     # Fixed-point price
     fixed_value = ndb.IntegerProperty(required=True,
-        validator=price_value_validator)
-    value = ndb.ComputedProperty(lambda self: self.fixed_value/100)
+                                      validator=price_value_validator)
+    value = ndb.ComputedProperty(lambda self: self.fixed_value / 100)
     currency = ndb.TextProperty()
 
     def __str__(self):
@@ -156,6 +158,8 @@ class Price(ndb.Model):
 
 
 class Item(ndb.Model):
+    index = search.Index(name='Item')
+
     title = ndb.StringProperty(required=True)
     slug = ndb.StringProperty(required=True, indexed=True)
     seller_id = ndb.StringProperty(required=True)
@@ -170,6 +174,7 @@ class Item(ndb.Model):
     @staticmethod
     def _keywordize(value):
         from .utils import punct_re
+
         value = str(value)
         return punct_re.split(value.strip().lower())
 
@@ -195,7 +200,13 @@ class Item(ndb.Model):
         self.keywords = [Keyword(keyword=__) for __ in keywords]
 
     def _post_put_hook(self, future):
-       app.logger.info('Item %s/%s updated.' % (self.key.id(), self.slug))
+        app.logger.info('Item %s/%s updated.' % (self.key.id(), self.slug))
+
+        Item.index.put(self._to_document(id=str(future.get_result().id())))
+
+    @classmethod
+    def _post_delete_hook(cls, key, future):
+        Item.index.delete(str(key.id()))
 
     def __str__(self):
         return str(self.slug)
@@ -208,6 +219,21 @@ class Item(ndb.Model):
 
     def editable_by(self, user):
         return user.get_id() == unicode(self.seller_id) or user.has_role('admin')
+
+    def _to_document(self, id=None):
+        """
+        Returns a Search API document for (the current property values of) this Item.
+        :return: an :py:class:`appengine.api.search.Document`
+        """
+
+        return search.Document(
+            doc_id=id if id else self.key.id(),
+            fields=[
+                search.TextField(name='title', value=self.title),
+                search.TextField(name='description', value=self.description),
+                search.TextField(name='price', value=self.price.get_formatted_value())
+            ]
+        )
 
 
 class Conversation(ndb.Model):
@@ -228,7 +254,7 @@ class Conversation(ndb.Model):
     def _pre_put_hook(self):
         if self.readable_subject == '':
             self.readable_subject = 'With %s' % ', '.join(map(lambda u: u.username,
-                                                             ndb.get_multi(self.participant_keys)))
+                                                              ndb.get_multi(self.participant_keys)))
             if self.subject != '':
                 self.readable_subject += ' about %s' % str(Item.get_by_id(self.subject))
             else:
@@ -247,8 +273,8 @@ class Conversation(ndb.Model):
 
         if not q:
             q = Conversation()
-            q.participant_keys=p_keys
-            q.subject=subject
+            q.participant_keys = p_keys
+            q.subject = subject
             q.put()
         else:
             q = q[0]
@@ -260,11 +286,14 @@ class Conversation(ndb.Model):
         c_query = Conversation.query(Conversation.participant_keys == user.key)
         return c_query
 
+
 class Message(ndb.Model):
     author_key = ndb.KeyProperty(kind=User)
+
     @property
     def author(self):
         return self.author_key.get()
+
     content = ndb.TextProperty()
     to = ndb.KeyProperty(kind=Conversation)
     sent = ndb.DateTimeProperty(auto_now_add=True)
@@ -272,7 +301,7 @@ class Message(ndb.Model):
     @staticmethod
     def send(author, to, subject, content):
         author_key = author.key
-        to_keys = set(map(lambda t:t.key, to))
+        to_keys = set(map(lambda t: t.key, to))
 
         conversation = Conversation.get_or_create(to_keys.union({author_key}), subject)
 

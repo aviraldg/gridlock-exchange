@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-{% for item in items %}
-    {% include "item/item.fragment.html" %}
-{% endfor %}
+    {% for item in items %}
+        {% include "item/item.fragment.html" %}
+    {% else %}
+        <div class="alert alert-info">
+            {% if 'q' in request.args %}
+                <p>Sorry, but no items were found matching your query:</p>
+                <pre>{{ request.args['q'] }}</pre>
+            {% else %}
+                <p>Sorry, nothing to show here.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
 {% endblock %}
