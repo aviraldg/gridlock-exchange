@@ -99,7 +99,10 @@ def item_create():
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
         item.active = form.active.data
-        item.put()
+        k = item.put()
+
+        flash('Your item has been created!', 'success')
+        return redirect(url_for('item', id=k.id(), slug=item.slug))
 
     return render_template('item/create.html', form=form)
 
