@@ -30,7 +30,7 @@ class UserProfileForm(Form):
 
 class ItemForm(Form):
     title = TextField('Title', validators=[required()])
-    description = TextAreaField('Description', validators=[required()])
+    description = TextAreaField('Description', validators=[required()], description='(markdown supported)')
     price = html5.IntegerField('Price', validators=[required(),
                                                     number_range(min=1)])
     active = BooleanField('Active', default=True)

@@ -6,7 +6,7 @@
         <span class="badge badge-inverse" itemprop="price">{{ item.price }}</span>
     </span>
     <span class="badge badge-inverse">Active: {{ item.active }}</span>
-    <p itemprop="description">{{ item.description }}</p>
+    <p itemprop="description">{{ item.description_rendered|safe }}</p>
     <div class="form-actions">
         <a href="{{ item.url() }}" class="btn">Details</a>
         {% if item.editable_by(current_user) %}

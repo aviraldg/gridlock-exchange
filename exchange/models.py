@@ -11,6 +11,7 @@ from babel.numbers import format_currency
 from flask.ext.login import AnonymousUser
 from hashlib import sha512
 from . import app, login_manager
+from markdown import markdown
 
 
 class UserProfile(ndb.Model):
@@ -164,6 +165,8 @@ class Item(ndb.Model):
     slug = ndb.StringProperty(required=True, indexed=True)
     seller_id = ndb.StringProperty(required=True)
     description = ndb.StringProperty(default=u'')
+    description_rendered = ndb.ComputedProperty(lambda self: markdown(self.description, output_format='html5',
+                                                                      safe_mode='escape'))
     created = ndb.DateTimeProperty(auto_now_add=True)
     expiry = ndb.DateTimeProperty(default=None)
     price = ndb.StructuredProperty(Price, required=True)
