@@ -113,30 +113,12 @@ def item_index():
     else:
         iq = ItemQuery.query()
 
-    items, cursor, more = iq.fetch()
+    try:
+        items, cursor, more = iq.fetch(10)
+    except search.QueryError:
+        flash('Sorry, but your query failed.', 'error')
+        return redirect(url_for('index'))
 
-    # def _active_items(items):
-    #     for item in items:
-    #         if item.active or item.seller_id == current_user.get_id():
-    #             yield item
-    #
-    # if 'q' in request.args:
-    #     query = request.args['q'].strip().lower()
-    #
-    #     try:
-    #         results = Item.index.search(search.Query(query))
-    #     except search.QueryError:
-    #         flash('Sorry, but your query failed.', 'error')
-    #         return redirect(url_for('index'))
-    #
-    #     import itertools
-    #     items = itertools.islice(_active_items(results.results), 10)
-    #     cursor, more = results.cursor, True
-    #     items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in items])
-    #     #query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
-    # else:
-    #     query = Item.query(ndb.OR(Item.active == True, Item.seller_id == current_user.get_id()))
-    #     items, cursor, more = query.fetch_page(10)
     return render_template('item/index.html', items=items)
 
 @app.route('/item/<int:id>/<string:slug>')
