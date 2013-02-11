@@ -3,10 +3,10 @@ from wtforms import ValidationError
 
 __author__ = 'aviraldg'
 
-from flask import request, render_template, flash, redirect, url_for, abort
+from flask import request, render_template, flash, redirect, url_for, abort, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from google.appengine.api import search
-from google.appengine.ext import ndb
+import datetime
 from . import app
 from .models import User, Item, Price, Conversation, Message
 from .utils import slugify, ItemQuery
@@ -260,3 +260,18 @@ def message_conversation(id):
 
     return render_template('message/conversation.html', conversation=c, messages=page[0], cursor=page[1],
                            has_more=page[2], message_send_form=forms.MessageSendForm())
+
+@app.route('/user/data-liberation/')
+@app.route('/user/data-liberation/<string:filename>')
+@login_required
+def data_liberation(filename=None):
+    if not filename:
+        return redirect(url_for('data_liberation',
+                                filename=datetime.datetime.now().ctime().replace(' ', '-').replace(':', '-') +
+                                         '-%s.zip' % current_user.username))
+    # XXX Do this in a background task, cache, etc.
+    from datalib import generate_zip
+    zip = generate_zip(current_user.username)
+    resp = make_response(zip)
+    resp.headers['Content-Type'] = 'application/zip'
+    return resp
