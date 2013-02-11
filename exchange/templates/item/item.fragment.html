@@ -5,6 +5,7 @@
     <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
         <span class="badge badge-inverse" itemprop="price">{{ item.price }}</span>
     </span>
+    <span class="badge badge-inverse">Active: {{ item.active }}</span>
     <p itemprop="description">{{ item.description }}</p>
     <div class="form-actions">
         <a href="{{ item.url() }}" class="btn">Details</a>

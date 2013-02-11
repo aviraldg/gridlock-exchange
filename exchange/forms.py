@@ -33,6 +33,7 @@ class ItemForm(Form):
     description = TextAreaField('Description', validators=[required()])
     price = html5.IntegerField('Price', validators=[required(),
                                                     number_range(min=1)])
+    active = BooleanField('Active', default=True)
 
 class ItemDeleteForm(Form):
     pass # This form is only used for CSRF protection.

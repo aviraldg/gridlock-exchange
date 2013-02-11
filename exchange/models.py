@@ -167,6 +167,7 @@ class Item(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     expiry = ndb.DateTimeProperty(default=None)
     price = ndb.StructuredProperty(Price, required=True)
+    active = ndb.BooleanProperty(default=True)
 
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)

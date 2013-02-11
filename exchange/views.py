@@ -9,7 +9,7 @@ from google.appengine.api import search
 from google.appengine.ext import ndb
 from . import app
 from .models import User, Item, Price, Conversation, Message
-from .utils import slugify
+from .utils import slugify, ItemQuery
 from .decorators import role_required, condition_required
 import forms
 
@@ -98,6 +98,7 @@ def item_create():
         item.slug = slugify(form.title.data)
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        item.active = form.active.data
         item.put()
 
     return render_template('item/create.html', form=form)
@@ -106,21 +107,36 @@ def item_create():
 def item_index():
     # TODO Paginate results properly, and add restrictions on kinds of queries possible.
     # TODO Partial-match search
+
     if 'q' in request.args:
-        query = request.args['q'].strip().lower()
-
-        try:
-            results = Item.index.search(search.Query(query))
-        except search.QueryError:
-            flash('Sorry, but your query failed.', 'error')
-            return redirect(url_for('index'))
-
-        items, cursor, more = results.results[:10], results.cursor, True
-        items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in items])
-        #query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
+        iq = ItemQuery.search(request.args['q'].strip().lower())
     else:
-        query = Item.query()
-        items, cursor, more = query.fetch_page(10)
+        iq = ItemQuery.query()
+
+    items, cursor, more = iq.fetch()
+
+    # def _active_items(items):
+    #     for item in items:
+    #         if item.active or item.seller_id == current_user.get_id():
+    #             yield item
+    #
+    # if 'q' in request.args:
+    #     query = request.args['q'].strip().lower()
+    #
+    #     try:
+    #         results = Item.index.search(search.Query(query))
+    #     except search.QueryError:
+    #         flash('Sorry, but your query failed.', 'error')
+    #         return redirect(url_for('index'))
+    #
+    #     import itertools
+    #     items = itertools.islice(_active_items(results.results), 10)
+    #     cursor, more = results.cursor, True
+    #     items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in items])
+    #     #query = ndb.gql('SELECT * FROM Item WHERE keywords.keyword=:1', request.args['q'].strip().lower())
+    # else:
+    #     query = Item.query(ndb.OR(Item.active == True, Item.seller_id == current_user.get_id()))
+    #     items, cursor, more = query.fetch_page(10)
     return render_template('item/index.html', items=items)
 
 @app.route('/item/<int:id>/<string:slug>')
