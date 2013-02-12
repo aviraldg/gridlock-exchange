@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
     {% with %}
-        {% set action = url_for('item_update', id=id, slug=slug) %}
         {% set crud_method = 'update' %}
         {% include "item/form.fragment.html" %}
     {% endwith %}

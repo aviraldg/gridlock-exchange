@@ -12,6 +12,9 @@ from flask.ext.login import AnonymousUser
 from hashlib import sha512
 from . import app, login_manager
 from markdown import markdown
+from google.appengine.api import urlfetch
+import json
+import urllib
 
 
 class UserProfile(ndb.Model):
@@ -163,6 +166,13 @@ class Price(ndb.Model):
         # TODO: Don't hardcode the locale
         return format_currency(self.value, self.currency, locale='en_US')
 
+def _youtube_render(link):
+    url = 'http://www.youtube.com/oembed?url={url}&format=json'.format(url=urllib.quote_plus(link))
+    try:
+        j = json.loads(urlfetch.fetch(url).content)
+        return j['html']
+    except:
+        return ''
 
 class Item(ndb.Model):
     index = search.Index(name='Item')
@@ -178,6 +188,8 @@ class Item(ndb.Model):
     price = ndb.StructuredProperty(Price, required=True)
     active = ndb.BooleanProperty(default=True)
     image = ndb.BlobKeyProperty()
+    youtube = ndb.StringProperty()
+    youtube_rendered = ndb.ComputedProperty(lambda self: _youtube_render(self.youtube) if self.youtube else '')
 
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)

@@ -36,6 +36,7 @@ class ItemForm(Form):
     price = html5.IntegerField(_LT('Price'), validators=[required(),
                                                     number_range(min=1)])
     image = file.FileField(_LT('Image'))
+    youtube = TextField(_LT('Youtube Video URL'))
     active = BooleanField(_LT('Active'), default=True)
 
 

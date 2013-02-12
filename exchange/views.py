@@ -103,6 +103,7 @@ def item_create():
         if form.image.has_file():
             blob = blobstore.parse_blob_info(to_fieldstorage(form.image.data))
             item.image = blob.key()
+        item.youtube = form.youtube.data
         item.active = form.active.data
         k = item.put()
 
@@ -145,7 +146,7 @@ def item_update(id, slug):
         abort(403)
 
     form = ItemForm(title=item.title, description=item.description,
-        price=item.price.fixed_value/100)
+        price=item.price.fixed_value/100, youtube=item.youtube)
 
     if form.validate_on_submit():
         item.title = form.title.data
