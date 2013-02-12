@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 20:13+0530\n"
+"POT-Creation-Date: 2013-02-12 23:35+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,109 +17,117 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: forms.py:12 forms.py:19 forms.py:46
+#: forms.py:13 forms.py:20 forms.py:50
 msgid "Username"
 msgstr ""
 
-#: forms.py:13
+#: forms.py:14
 msgid "Name"
 msgstr ""
 
-#: forms.py:14
+#: forms.py:15
 msgid "Email"
 msgstr ""
 
-#: forms.py:15 forms.py:20
+#: forms.py:16 forms.py:21
 msgid "Password"
 msgstr ""
 
-#: forms.py:21
+#: forms.py:22
 msgid "Remember me"
 msgstr ""
 
-#: forms.py:33
+#: forms.py:34
 msgid "Title"
 msgstr ""
 
-#: forms.py:34
+#: forms.py:35
 msgid "Description"
 msgstr ""
 
-#: forms.py:35
+#: forms.py:36
 msgid "Price"
 msgstr ""
 
-#: forms.py:37
+#: forms.py:38
+msgid "Image"
+msgstr ""
+
+#: forms.py:39
+msgid "Youtube Video URL"
+msgstr ""
+
+#: forms.py:40
 msgid "Active"
 msgstr ""
 
-#: forms.py:50
+#: forms.py:54
 msgid "The username entered must match your username exactly."
 msgstr ""
 
-#: forms.py:53
+#: forms.py:57
 msgid "To"
 msgstr ""
 
-#: forms.py:54
+#: forms.py:58
 msgid "Message"
 msgstr ""
 
-#: views.py:32
+#: views.py:33
 msgid "You've been registered!"
 msgstr ""
 
-#: views.py:45
+#: views.py:46
 msgid "Incorrect username or password"
 msgstr ""
 
-#: views.py:48
+#: views.py:49
 msgid "You cannot login using this account as it has been deactivated."
 msgstr ""
 
-#: views.py:50
+#: views.py:51
 msgid "You've successfully been logged in!"
 msgstr ""
 
-#: views.py:72
+#: views.py:73
 msgid "You have successfully been logged out."
 msgstr ""
 
-#: views.py:105
+#: views.py:110
 msgid "Your item has been created!"
 msgstr ""
 
-#: views.py:123
+#: views.py:129
 msgid "Sorry, but your query failed."
 msgstr ""
 
-#: views.py:151
+#: views.py:163
 msgid "Item updated"
 msgstr ""
 
-#: views.py:168
+#: views.py:181
 msgid "The item has been deleted successfully."
 msgstr ""
 
-#: views.py:195
+#: views.py:208
 msgid "Sorry, but administrators cannot deactivate their own accounts."
 msgstr ""
 
-#: views.py:196
+#: views.py:209
 msgid "Please ask another administrator to deactivate your account."
 msgstr ""
 
-#: views.py:217
+#: views.py:230
 msgid "Sorry, but administrators cannot delete their accounts."
 msgstr ""
 
-#: views.py:218
+#: views.py:231
 msgid ""
 "Please ask another administrator to deactivate your account, or to make "
 "you a regular user."
 msgstr ""
 
-#: views.py:225
+#: views.py:238
 msgid "Your account has successfully been deleted."
 msgstr ""
 
@@ -159,15 +167,15 @@ msgstr ""
 msgid "Update Item"
 msgstr ""
 
-#: templates/item/item.fragment.html:11
+#: templates/item/item.fragment.html:21
 msgid "Details"
 msgstr ""
 
-#: templates/item/item.fragment.html:13
+#: templates/item/item.fragment.html:23
 msgid "Update"
 msgstr ""
 
-#: templates/item/item.fragment.html:16 templates/user/user.fragment.html:17
+#: templates/item/item.fragment.html:26 templates/user/user.fragment.html:17
 msgid "Delete"
 msgstr ""
 

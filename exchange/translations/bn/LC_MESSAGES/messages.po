@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gridlock Exchange\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 20:13+0530\n"
-"PO-Revision-Date: 2013-02-12 20:15+0530\n"
+"POT-Creation-Date: 2013-02-12 23:35+0530\n"
+"PO-Revision-Date: 2013-02-12 23:37+0530\n"
 "Last-Translator: Aviral Dasgupta <me@aviraldg.com>\n"
 "Language-Team: Aviral Dasgupta <me@aviraldg.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -17,104 +17,112 @@ msgstr ""
 "Generated-By: Babel 0.9.6\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: forms.py:12 forms.py:19 forms.py:46
+#: forms.py:13 forms.py:20 forms.py:50
 msgid "Username"
 msgstr "ব্যবহারকারীর নাম"
 
-#: forms.py:13
+#: forms.py:14
 msgid "Name"
 msgstr "নাম"
 
-#: forms.py:14
+#: forms.py:15
 msgid "Email"
 msgstr "ইমেল"
 
-#: forms.py:15 forms.py:20
+#: forms.py:16 forms.py:21
 msgid "Password"
 msgstr "পাসওয়ার্ড"
 
-#: forms.py:21
+#: forms.py:22
 msgid "Remember me"
 msgstr "আমাকে মনে রেখো"
 
-#: forms.py:33
+#: forms.py:34
 msgid "Title"
 msgstr "বিষয়"
 
-#: forms.py:34
+#: forms.py:35
 msgid "Description"
 msgstr "বিবরণ"
 
-#: forms.py:35
+#: forms.py:36
 msgid "Price"
 msgstr "মূল্য"
 
-#: forms.py:37
+#: forms.py:38
+msgid "Image"
+msgstr "ছবি"
+
+#: forms.py:39
+msgid "Youtube Video URL"
+msgstr "Youtube ভিডিও URL"
+
+#: forms.py:40
 msgid "Active"
 msgstr "সক্রিয়"
 
-#: forms.py:50
+#: forms.py:54
 msgid "The username entered must match your username exactly."
 msgstr "ব্যবহারকারীর নাম প্রবেশ করানো আপনার ব্যবহারকারী নাম ঠিক মেলানো."
 
-#: forms.py:53
+#: forms.py:57
 msgid "To"
 msgstr "প্রাপক"
 
-#: forms.py:54
+#: forms.py:58
 msgid "Message"
 msgstr "সংবাদ"
 
-#: views.py:32
+#: views.py:33
 msgid "You've been registered!"
 msgstr "আপনাকে নিবন্ধীকৃত করা হয়েছে!"
 
-#: views.py:45
+#: views.py:46
 msgid "Incorrect username or password"
 msgstr "ভুল ব্যবহারকারী নাম বা পাসওয়ার্ড"
 
-#: views.py:48
+#: views.py:49
 msgid "You cannot login using this account as it has been deactivated."
 msgstr "আপনি এই একাউন্ট ব্যবহার করতে পারবেন না কনকি ইটা নিষ্ক্রিয় করা হয়েছে"
 
-#: views.py:50
+#: views.py:51
 msgid "You've successfully been logged in!"
 msgstr "আপনাকে সফলভাবে লগ ইন করা হয়েছে!"
 
-#: views.py:72
+#: views.py:73
 msgid "You have successfully been logged out."
 msgstr "আপনি সফলভাবে লগ আউট হয়েছেন."
 
-#: views.py:105
+#: views.py:110
 msgid "Your item has been created!"
 msgstr "আপনার আইটেম তয়রী হয়ে গেছে!"
 
-#: views.py:123
+#: views.py:129
 msgid "Sorry, but your query failed."
 msgstr "দুঃখিত, কিন্তু আপনার প্রশ্নের ব্যর্থ হয়েছে."
 
-#: views.py:151
+#: views.py:163
 msgid "Item updated"
 msgstr "আইটেম তা পরিবর্তন করা হয়েগাছে।"
 
-#: views.py:168
+#: views.py:181
 msgid "The item has been deleted successfully."
 msgstr "আইটেম সফলভাবে মুছে দেওয়া হয়েছে"
 
-#: views.py:195
+#: views.py:208
 msgid "Sorry, but administrators cannot deactivate their own accounts."
 msgstr ""
 "দুঃখিত, কিন্তু অ্যাডমিনিস্ট্রেটররা তাদের নিজেদের অ্যাকাউন্ট নিষ্ক্রিয় করতে পারবেন না."
 
-#: views.py:196
+#: views.py:209
 msgid "Please ask another administrator to deactivate your account."
 msgstr "আপনার অ্যাকাউন্ট নিষ্ক্রিয় অন্য প্রশাসক জিজ্ঞাসা করুন."
 
-#: views.py:217
+#: views.py:230
 msgid "Sorry, but administrators cannot delete their accounts."
 msgstr "দুঃখিত, কিন্তু অ্যাডমিনিস্ট্রেটররা তাদের অ্যাকাউন্ট মুছে দিতে পারেন."
 
-#: views.py:218
+#: views.py:231
 msgid ""
 "Please ask another administrator to deactivate your account, or to make you "
 "a regular user."
@@ -122,7 +130,7 @@ msgstr ""
 "অন্য প্রশাসক আপনার অ্যাকাউন্ট নিষ্ক্রিয় করার চাইতে, অথবা আপনি একটি নিয়মিত "
 "ব্যবহারকারী না দয়া করে."
 
-#: views.py:225
+#: views.py:238
 msgid "Your account has successfully been deleted."
 msgstr "আপনার অ্যাকাউন্ট সফলভাবে মুছে দেওয়া হয়েছে."
 
@@ -162,15 +170,15 @@ msgstr "রদ কর"
 msgid "Update Item"
 msgstr "আইটেম তা পরিবর্তন করা"
 
-#: templates/item/item.fragment.html:11
+#: templates/item/item.fragment.html:21
 msgid "Details"
 msgstr "বিস্তারিত"
 
-#: templates/item/item.fragment.html:13
+#: templates/item/item.fragment.html:23
 msgid "Update"
 msgstr "পরিবর্তন"
 
-#: templates/item/item.fragment.html:16 templates/user/user.fragment.html:17
+#: templates/item/item.fragment.html:26 templates/user/user.fragment.html:17
 msgid "Delete"
 msgstr "মুছে ফেলা"
 

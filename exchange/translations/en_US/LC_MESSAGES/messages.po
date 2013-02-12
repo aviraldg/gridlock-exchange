@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gridlock Exchange\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 20:13+0530\n"
-"PO-Revision-Date: 2013-02-12 20:15+0530\n"
+"POT-Creation-Date: 2013-02-12 23:35+0530\n"
+"PO-Revision-Date: 2013-02-12 23:39+0530\n"
 "Last-Translator: Aviral Dasgupta <me@aviraldg.com>\n"
 "Language-Team: Aviral Dasgupta <me@aviraldg.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -17,103 +17,111 @@ msgstr ""
 "Generated-By: Babel 0.9.6\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: forms.py:12 forms.py:19 forms.py:46
+#: forms.py:13 forms.py:20 forms.py:50
 msgid "Username"
 msgstr "Username"
 
-#: forms.py:13
+#: forms.py:14
 msgid "Name"
 msgstr "Name"
 
-#: forms.py:14
+#: forms.py:15
 msgid "Email"
 msgstr "Email"
 
-#: forms.py:15 forms.py:20
+#: forms.py:16 forms.py:21
 msgid "Password"
 msgstr "Password"
 
-#: forms.py:21
+#: forms.py:22
 msgid "Remember me"
 msgstr "Remember me"
 
-#: forms.py:33
+#: forms.py:34
 msgid "Title"
 msgstr "Title"
 
-#: forms.py:34
+#: forms.py:35
 msgid "Description"
 msgstr "Description"
 
-#: forms.py:35
+#: forms.py:36
 msgid "Price"
 msgstr "Price"
 
-#: forms.py:37
+#: forms.py:38
+msgid "Image"
+msgstr "Image"
+
+#: forms.py:39
+msgid "Youtube Video URL"
+msgstr "Youtube Video URL"
+
+#: forms.py:40
 msgid "Active"
 msgstr "Active"
 
-#: forms.py:50
+#: forms.py:54
 msgid "The username entered must match your username exactly."
 msgstr "The username entered must match your username exactly."
 
-#: forms.py:53
+#: forms.py:57
 msgid "To"
 msgstr "To"
 
-#: forms.py:54
+#: forms.py:58
 msgid "Message"
 msgstr "Message"
 
-#: views.py:32
+#: views.py:33
 msgid "You've been registered!"
 msgstr "You've been registered!"
 
-#: views.py:45
+#: views.py:46
 msgid "Incorrect username or password"
 msgstr "Incorrect username or password"
 
-#: views.py:48
+#: views.py:49
 msgid "You cannot login using this account as it has been deactivated."
 msgstr "You cannot login using this account as it has been deactivated."
 
-#: views.py:50
+#: views.py:51
 msgid "You've successfully been logged in!"
 msgstr "You've successfully been logged in!"
 
-#: views.py:72
+#: views.py:73
 msgid "You have successfully been logged out."
 msgstr "You have successfully been logged out."
 
-#: views.py:105
+#: views.py:110
 msgid "Your item has been created!"
 msgstr "Your item has been created!"
 
-#: views.py:123
+#: views.py:129
 msgid "Sorry, but your query failed."
 msgstr "Sorry, but your query failed."
 
-#: views.py:151
+#: views.py:163
 msgid "Item updated"
 msgstr "Item updated"
 
-#: views.py:168
+#: views.py:181
 msgid "The item has been deleted successfully."
 msgstr "The item has been deleted successfully."
 
-#: views.py:195
+#: views.py:208
 msgid "Sorry, but administrators cannot deactivate their own accounts."
 msgstr "Sorry, but administrators cannot deactivate their own accounts."
 
-#: views.py:196
+#: views.py:209
 msgid "Please ask another administrator to deactivate your account."
 msgstr "Please ask another administrator to deactivate your account."
 
-#: views.py:217
+#: views.py:230
 msgid "Sorry, but administrators cannot delete their accounts."
 msgstr "Sorry, but administrators cannot delete their accounts"
 
-#: views.py:218
+#: views.py:231
 msgid ""
 "Please ask another administrator to deactivate your account, or to make you "
 "a regular user."
@@ -121,7 +129,7 @@ msgstr ""
 "Please ask another administrator to deactivate your account, or to make you "
 "a regular user."
 
-#: views.py:225
+#: views.py:238
 msgid "Your account has successfully been deleted."
 msgstr "Your account has successfully been deleted."
 
@@ -161,15 +169,15 @@ msgstr "Cancel"
 msgid "Update Item"
 msgstr "Update Item"
 
-#: templates/item/item.fragment.html:11
+#: templates/item/item.fragment.html:21
 msgid "Details"
 msgstr "Details"
 
-#: templates/item/item.fragment.html:13
+#: templates/item/item.fragment.html:23
 msgid "Update"
 msgstr "Update"
 
-#: templates/item/item.fragment.html:16 templates/user/user.fragment.html:17
+#: templates/item/item.fragment.html:26 templates/user/user.fragment.html:17
 msgid "Delete"
 msgstr "Delete"
 
