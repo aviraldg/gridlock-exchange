@@ -1,10 +1,11 @@
 from flask.ext.wtf import Form, TextField, PasswordField, TextAreaField, \
     BooleanField, email, required, length
-from flask.ext.wtf import html5
+from flask.ext.wtf import html5, file
 from flask.ext.login import current_user
 from wtforms import ValidationError
 from wtforms.validators import number_range
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
+from google.appengine.api import images
 
 __author__ = 'aviraldg'
 
@@ -34,7 +35,9 @@ class ItemForm(Form):
     description = TextAreaField(_LT('Description'), validators=[required()], description='(markdown supported)')
     price = html5.IntegerField(_LT('Price'), validators=[required(),
                                                     number_range(min=1)])
+    image = file.FileField(_LT('Image'))
     active = BooleanField(_LT('Active'), default=True)
+
 
 class ItemDeleteForm(Form):
     pass # This form is only used for CSRF protection.

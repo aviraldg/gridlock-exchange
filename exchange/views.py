@@ -1,6 +1,3 @@
-from exchange.forms import ItemForm
-from wtforms import ValidationError
-
 __author__ = 'aviraldg'
 
 from flask import request, render_template, flash, redirect, url_for, abort, make_response
@@ -9,10 +6,14 @@ from google.appengine.api import search
 import datetime
 from . import app
 from .models import User, Item, Price, Conversation, Message
-from .utils import slugify, ItemQuery
+from .utils import slugify, ItemQuery, to_fieldstorage
 from .decorators import role_required, condition_required
 import forms
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
+from exchange.forms import ItemForm
+from wtforms import ValidationError
+from google.appengine.ext import blobstore
+
 
 @app.route('/')
 def index():
@@ -99,13 +100,17 @@ def item_create():
         item.slug = slugify(form.title.data)
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        if form.image.has_file():
+            blob = blobstore.parse_blob_info(to_fieldstorage(form.image.data))
+            item.image = blob.key()
         item.active = form.active.data
         k = item.put()
 
         flash(_T('Your item has been created!'), 'success')
         return redirect(url_for('item', id=k.id(), slug=item.slug))
 
-    return render_template('item/create.html', form=form)
+    return render_template('item/create.html', form=form,
+                           action=blobstore.create_upload_url(url_for('item_create')))
 
 @app.route('/item/')
 def item_index():
@@ -146,13 +151,20 @@ def item_update(id, slug):
         item.title = form.title.data
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        if form.image.has_file():
+            app.logger.debug(form.image.data)
+            app.logger.debug(dir(form.image.data))
+            app.logger.debug(form.image.data.mimetype_params)
+            blob = blobstore.parse_blob_info(to_fieldstorage(form.image.data))
+            item.image = blob.key()
         item.put()
 
         flash(_T('Item updated'), 'success')
 
         return redirect(url_for('item', id=id, slug=slug))
 
-    return render_template('item/update.html', form=form, id=id, slug=slug)
+    return render_template('item/update.html', form=form, id=id, slug=slug,
+                           action=blobstore.create_upload_url(url_for('item_update', id=id, slug=slug)))
 
 @app.route('/item/<int:id>/<string:slug>/delete', methods=['POST'])
 @login_required
@@ -275,4 +287,15 @@ def data_liberation(filename=None):
     zip = generate_zip(current_user.username)
     resp = make_response(zip)
     resp.headers['Content-Type'] = 'application/zip'
+    return resp
+
+@app.route('/blob/<string:key>')
+def blob(key):
+    # TODO Limit this on the basis of whether the user can actually access the blob.
+    bi = blobstore.BlobInfo.get(blobstore.BlobKey(key))
+    if bi == None:
+        abort(404)
+    resp = make_response()
+    resp.mimetype = bi.content_type
+    resp.headers['X-AppEngine-BlobKey'] = key
     return resp

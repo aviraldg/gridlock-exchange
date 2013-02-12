@@ -7,7 +7,7 @@ from flask.ext.login import current_user
 from google.appengine.api import search
 from google.appengine.ext import ndb
 from google.appengine.datastore.datastore_query import Cursor
-import itertools
+from cgi import FieldStorage
 
 
 class ItemQuery:
@@ -102,3 +102,13 @@ def slugify(text, delim=u'-'):
         if word:
             result.append(word)
     return unicode(delim.join(result))
+
+def to_fieldstorage(f):
+    fs = FieldStorage()
+    fs.file = f
+    fs.type = f.mimetype
+    opt = f.mimetype_params
+    opt['filename'] = f.filename
+    fs.disposition_options = opt
+    fs.type_options = opt
+    return fs

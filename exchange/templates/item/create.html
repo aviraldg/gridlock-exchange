@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
     {% with %}
-        {% set action = url_for('item_create') %}
         {% set crud_method = 'create' %}
         {% include "item/form.fragment.html" %}
     {% endwith %}

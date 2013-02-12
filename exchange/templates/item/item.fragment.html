@@ -2,6 +2,11 @@
     <heading>
         <h1><a href="{{ item.url() }}" itemprop="name">{{ item.title }}</a></h1>
     </heading>
+    {% if item.image %}
+        <div>
+        <img src="{{ url_for('blob', key=item.image) }}" width="400em" height="400em">
+        </div>
+    {% endif %}
     <span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
         <span class="badge badge-inverse" itemprop="price">{{ item.price }}</span>
     </span>

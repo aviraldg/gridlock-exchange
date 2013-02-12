@@ -177,6 +177,7 @@ class Item(ndb.Model):
     expiry = ndb.DateTimeProperty(default=None)
     price = ndb.StructuredProperty(Price, required=True)
     active = ndb.BooleanProperty(default=True)
+    image = ndb.BlobKeyProperty()
 
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)
