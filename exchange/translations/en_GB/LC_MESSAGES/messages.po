@@ -6,15 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gridlock Exchange\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 19:25+0530\n"
-"PO-Revision-Date: 2013-02-12 19:23+0530\n"
+"POT-Creation-Date: 2013-02-12 20:13+0530\n"
+"PO-Revision-Date: 2013-02-12 20:15+0530\n"
 "Last-Translator: Aviral Dasgupta <me@aviraldg.com>\n"
 "Language-Team: Aviral Dasgupta <me@aviraldg.com>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
+"X-Generator: Poedit 1.5.5\n"
 
 #: forms.py:12 forms.py:19 forms.py:46
 msgid "Username"
@@ -114,11 +115,11 @@ msgstr "Sorry, but administrators cannot delete their accounts"
 
 #: views.py:218
 msgid ""
-"Please ask another administrator to deactivate your account, or to make "
-"you a regular user."
+"Please ask another administrator to deactivate your account, or to make you "
+"a regular user."
 msgstr ""
-"Please ask another administrator to deactivate your account, or to make "
-"you a regular user."
+"Please ask another administrator to deactivate your account, or to make you "
+"a regular user."
 
 #: views.py:225
 msgid "Your account has successfully been deleted."
@@ -168,15 +169,18 @@ msgstr "Details"
 msgid "Update"
 msgstr "Update"
 
-#: templates/item/item.fragment.html:16 templates/user/user.fragment.html:12
+#: templates/item/item.fragment.html:16 templates/user/user.fragment.html:17
 msgid "Delete"
 msgstr "Delete"
 
-#: templates/user/user.fragment.html:7
+#: templates/user/user.fragment.html:4
+msgid "Verified Student"
+msgstr "Verified Student"
+
+#: templates/user/user.fragment.html:12
 msgid "Deactivate"
 msgstr "Deactivate"
 
-#: templates/user/user.fragment.html:9
+#: templates/user/user.fragment.html:14
 msgid "Activate"
 msgstr "Activate"
-

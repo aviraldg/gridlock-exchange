@@ -76,6 +76,9 @@ class User(ndb.Model):
     def is_anonymous(self):
         return False
 
+    def is_student(self):
+        return self.email.endswith('.edu')
+
     def get_id(self):
         return unicode(self.key.id())
 
@@ -124,6 +127,9 @@ class CustomAnonymousUser(AnonymousUser):
         return False
 
     def editable_by(self, user):
+        return False
+
+    def is_student(self):
         return False
 
 
