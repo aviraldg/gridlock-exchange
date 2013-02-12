@@ -9,16 +9,16 @@
             <a class="brand" href="{{ url_for('index') }}">Gridlock Exchange</a>
             <div class="nav-collapse collapse navbar-responsive-collapse">
                 <ul class="nav">
-                    <li><a href="{{ url_for('item_index') }}">Items</a></li>
+                    <li><a href="{{ url_for('item_index') }}">{{ _('Items') }}</a></li>
                     {% if current_user.is_authenticated() %}
-                        <li><a href="{{ url_for('message_index') }}">Messages</a></li>
+                        <li><a href="{{ url_for('message_index') }}">{{ _('Messages') }}</a></li>
                     {% endif %}
                     {% if current_user.has_role('admin') %}
-                        <li><a href="{{ url_for('user_index') }}">Users</a></li>
+                        <li><a href="{{ url_for('user_index') }}">{{ _('Users') }}</a></li>
                     {% endif %}
                 </ul>
                 <form class="navbar-search pull-left" method="get" action="{{ url_for('item_index') }}">
-                    <input type="text" name="q" class="search-query span2" placeholder="Search" autocomplete="off"
+                    <input type="text" name="q" class="search-query span2" placeholder="{{ _('Search') }}" autocomplete="off"
                             {% if 'q' in request.args %}
                             value="{{ request.args['q'] }}"
                             {% endif %}
@@ -27,7 +27,7 @@
                 {% if logout_form %}
                     <form method="post" action="{{ url_for('logout') }}" class="navbar-form pull-right">
                         {{ logout_form.csrf_token }}
-                        <input type="submit" class="btn btn-inverse" value="Logout">
+                        <input type="submit" class="btn btn-inverse" value="{{ _('Logout') }}">
                     </form>
                 {% endif %}
                 <p class="navbar-text pull-right">
@@ -37,7 +37,7 @@
                 </p>
                {% if not current_user.is_authenticated() %}
                 <ul class="nav pull-right">
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
                 </ul>
                 {% endif %}
             </div>

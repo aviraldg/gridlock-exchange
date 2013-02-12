@@ -12,6 +12,7 @@ from .models import User, Item, Price, Conversation, Message
 from .utils import slugify, ItemQuery
 from .decorators import role_required, condition_required
 import forms
+from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 @app.route('/')
 def index():
@@ -28,7 +29,7 @@ def register():
         user.email = form.email.data
         user.set_password(form.password.data)
         user.put()
-        flash('You\'ve been registered!')
+        flash(_T('You\'ve been registered!'))
         return redirect(url_for('login'))
 
     return render_template('auth/register.html', form=form)
@@ -41,12 +42,12 @@ def login():
         user = User.authenticate(login_form.username.data,
             login_form.password.data)
         if not user:
-            flash('Incorrect username or password', 'error')
+            flash(_T('Incorrect username or password'), 'error')
         else:
             if not login_user(user, login_form.remember.data):
-                flash('You cannot login using this account as it has been deactivated.', 'warning')
+                flash(_T('You cannot login using this account as it has been deactivated.'), 'warning')
             else:
-                flash('You\'ve successfully been logged in!', 'success')
+                flash(_T('You\'ve successfully been logged in!'), 'success')
             return redirect(request.args.get('next') or url_for('index'))
 
 
@@ -68,7 +69,7 @@ def logout():
     except ValidationError:
         abort(403)
 
-    flash('You have successfully been logged out.', 'success')
+    flash(_T('You have successfully been logged out.'), 'success')
     return redirect(url_for('login'))
 
 @app.route('/profile')
@@ -101,7 +102,7 @@ def item_create():
         item.active = form.active.data
         k = item.put()
 
-        flash('Your item has been created!', 'success')
+        flash(_T('Your item has been created!'), 'success')
         return redirect(url_for('item', id=k.id(), slug=item.slug))
 
     return render_template('item/create.html', form=form)
@@ -119,7 +120,7 @@ def item_index():
     try:
         items, cursor, more = iq.fetch(10)
     except search.QueryError:
-        flash('Sorry, but your query failed.', 'error')
+        flash(_T('Sorry, but your query failed.'), 'error')
         return redirect(url_for('index'))
 
     return render_template('item/index.html', items=items)
@@ -147,7 +148,7 @@ def item_update(id, slug):
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
         item.put()
 
-        flash('Item updated', 'success')
+        flash(_T('Item updated'), 'success')
 
         return redirect(url_for('item', id=id, slug=slug))
 
@@ -164,7 +165,7 @@ def item_delete(id, slug):
     form = forms.ItemDeleteForm()
     if form.validate_on_submit():
         item.key.delete()
-        flash('The item has been deleted successfully.', 'success')
+        flash(_T('The item has been deleted successfully.'), 'success')
         return redirect(url_for('item_index'))
     else:
         abort(403)
@@ -191,8 +192,8 @@ def user_deactivate(id, username):
     user = User.get_or_404(id, username)
 
     if current_user.has_role('admin') and user == current_user:
-        flash('Sorry, but administrators cannot deactivate their own accounts.', 'error')
-        flash('Please ask another administrator to deactivate your account.', 'info')
+        flash(_T('Sorry, but administrators cannot deactivate their own accounts.'), 'error')
+        flash(_T('Please ask another administrator to deactivate your account.'), 'info')
         return redirect(url_for('user', id=id, username=username))
 
     if form.validate_on_submit():
@@ -213,15 +214,15 @@ def user_delete(id, username):
     user = User.get_or_404(id, username)
 
     if current_user.has_role('admin'):
-        flash('Sorry, but administrators cannot delete their accounts.', 'error')
-        flash('Please ask another administrator to deactivate your account, or make you a regular user.', 'info')
+        flash(_T('Sorry, but administrators cannot delete their accounts.'), 'error')
+        flash(_T('Please ask another administrator to deactivate your account, or to make you a regular user.'), 'info')
         return redirect(url_for('user', id=id, username=username))
 
     if form.validate_on_submit():
         logout_user()
         user.delete()
 
-        flash('Your account has successfully been deleted.')
+        flash(_T('Your account has successfully been deleted.'))
 
         return redirect(url_for('index'))
 

@@ -8,12 +8,12 @@
     <span class="badge badge-inverse">Active: {{ item.active }}</span>
     <p itemprop="description">{{ item.description_rendered|safe }}</p>
     <div class="form-actions">
-        <a href="{{ item.url() }}" class="btn">Details</a>
+        <a href="{{ item.url() }}" class="btn">{{ _('Details') }}</a>
         {% if item.editable_by(current_user) %}
-            <a class="btn btn-primary" href="{{ url_for('item_update', id=item.key.id(), slug=item.slug) }}">Update</a>
+            <a class="btn btn-primary" href="{{ url_for('item_update', id=item.key.id(), slug=item.slug) }}">{{ _('Update') }}</a>
             <form method="post" action="{{ url_for('item_delete', id=item.key.id(), slug=item.slug) }}" style="display: inline">
                 {{ item_delete_form.csrf_token }}
-                <input type="submit" class="btn btn-danger" value="Delete">
+                <input type="submit" class="btn btn-danger" value="{{ _('Delete') }}">
             </form>
         {% endif %}
         <div class="pull-right">

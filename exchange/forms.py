@@ -4,20 +4,21 @@ from flask.ext.wtf import html5
 from flask.ext.login import current_user
 from wtforms import ValidationError
 from wtforms.validators import number_range
+from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 __author__ = 'aviraldg'
 
 class RegisterForm(Form):
-    username = TextField('Username', validators=[required()])
-    name = TextField('Name', validators=[required()])
-    email = html5.EmailField('Email', validators=(email(), required()))
-    password = PasswordField('Password', validators=[length(min=10)])
+    username = TextField(_LT('Username'), validators=[required()])
+    name = TextField(_LT('Name'), validators=[required()])
+    email = html5.EmailField(_LT('Email'), validators=(email(), required()))
+    password = PasswordField(_LT('Password'), validators=[length(min=10)])
 
 
 class LoginForm(Form):
-    username = TextField('Username', validators=[required()])
-    password = PasswordField('Password', validators=[required()])
-    remember = BooleanField('Remember me')
+    username = TextField(_LT('Username'), validators=[required()])
+    password = PasswordField(_LT('Password'), validators=[required()])
+    remember = BooleanField(_LT('Remember me'))
 
 
 class LogoutForm(Form):
@@ -29,11 +30,11 @@ class UserProfileForm(Form):
 
 
 class ItemForm(Form):
-    title = TextField('Title', validators=[required()])
-    description = TextAreaField('Description', validators=[required()], description='(markdown supported)')
-    price = html5.IntegerField('Price', validators=[required(),
+    title = TextField(_LT('Title'), validators=[required()])
+    description = TextAreaField(_LT('Description'), validators=[required()], description='(markdown supported)')
+    price = html5.IntegerField(_LT('Price'), validators=[required(),
                                                     number_range(min=1)])
-    active = BooleanField('Active', default=True)
+    active = BooleanField(_LT('Active'), default=True)
 
 class ItemDeleteForm(Form):
     pass # This form is only used for CSRF protection.
@@ -42,12 +43,12 @@ class UserDeactivateForm(Form):
     pass # This form is only used for CSRF protection.
 
 class UserDeleteForm(Form):
-    username = TextField('Username', validators=[required()])
+    username = TextField(_LT('Username'), validators=[required()])
 
     def validate_username(self, field):
         if field.data != current_user.username:
-            raise ValidationError('The username entered must match your username exactly.')
+            raise ValidationError(_LT('The username entered must match your username exactly.'))
 
 class MessageSendForm(Form):
-    to = TextField('To', validators=[required()])
-    message = TextAreaField('Message')
+    to = TextField(_LT('To'), validators=[required()])
+    message = TextAreaField(_LT('Message'))

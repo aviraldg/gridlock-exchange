@@ -4,10 +4,10 @@
             style="display: inline">
         {{ user_deactivate_form.csrf_token }}
         {% if user.active %}
-            <input type="submit" class="btn btn-warning" value="Deactivate">
+            <input type="submit" class="btn btn-warning" value="{{ _('Deactivate') }}">
         {% else %}
-            <input type="submit" class="btn btn-success" value="Activate">
+            <input type="submit" class="btn btn-success" value="{{ _('Activate') }}">
         {% endif %}
     </form>
-    <a class="btn btn-danger" href="{{ url_for('user_delete', id=user.get_id(), username=user.username) }}">Delete</a>
+    <a class="btn btn-danger" href="{{ url_for('user_delete', id=user.get_id(), username=user.username) }}">{{ _('Delete') }}</a>
 {% endif %}

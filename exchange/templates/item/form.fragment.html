@@ -19,11 +19,11 @@
     {% endfor %}
     <div class="form-actions">
         {% if crud_method == "create" %}
-            <input class="btn btn-primary" type="submit" value="Create Item">
-            <a class="btn" href="{{ url_for('item_index') }}">Cancel</a>
+            <input class="btn btn-primary" type="submit" value="{{ _('Create Item') }}">
+            <a class="btn" href="{{ url_for('item_index') }}">{{ _('Cancel') }}</a>
         {% elif crud_method == "update" %}
-            <input class="btn btn-primary" type="submit" value="Update Item">
-            <a class="btn" href="{{ url_for('item', id=id, slug=slug) }}">Cancel</a>
+            <input class="btn btn-primary" type="submit" value="{{ _('Update Item') }}">
+            <a class="btn" href="{{ url_for('item', id=id, slug=slug) }}">{{ _('Cancel') }}</a>
         {% endif %}
     </div>
 </form>

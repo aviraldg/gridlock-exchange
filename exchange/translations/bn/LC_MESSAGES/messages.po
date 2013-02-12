@@ -1,0 +1,184 @@
+# Bengali translations for Gridlock.
+# Copyright (C) 2013 ORGANIZATION
+# This file is distributed under the same license as the Gridlock project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: Gridlock Exchange\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2013-02-12 19:25+0530\n"
+"PO-Revision-Date: 2013-02-12 19:23+0530\n"
+"Last-Translator: Aviral Dasgupta <me@aviraldg.com>\n"
+"Language-Team: Aviral Dasgupta <me@aviraldg.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: forms.py:12 forms.py:19 forms.py:46
+msgid "Username"
+msgstr "ব্যবহারকারীর নাম"
+
+#: forms.py:13
+msgid "Name"
+msgstr "নাম"
+
+#: forms.py:14
+msgid "Email"
+msgstr "ইমেল"
+
+#: forms.py:15 forms.py:20
+msgid "Password"
+msgstr "পাসওয়ার্ড"
+
+#: forms.py:21
+msgid "Remember me"
+msgstr "আমাকে মনে রেখো"
+
+#: forms.py:33
+msgid "Title"
+msgstr "বিষয়"
+
+#: forms.py:34
+msgid "Description"
+msgstr "বিবরণ"
+
+#: forms.py:35
+msgid "Price"
+msgstr "মূল্য"
+
+#: forms.py:37
+msgid "Active"
+msgstr "সক্রিয়"
+
+#: forms.py:50
+msgid "The username entered must match your username exactly."
+msgstr "ব্যবহারকারীর নাম প্রবেশ করানো আপনার ব্যবহারকারী নাম ঠিক মেলানো."
+
+#: forms.py:53
+msgid "To"
+msgstr "প্রাপক"
+
+#: forms.py:54
+msgid "Message"
+msgstr "সংবাদ"
+
+#: views.py:32
+msgid "You've been registered!"
+msgstr "আপনাকে নিবন্ধীকৃত করা হয়েছে!"
+
+#: views.py:45
+msgid "Incorrect username or password"
+msgstr "ভুল ব্যবহারকারী নাম বা পাসওয়ার্ড"
+
+#: views.py:48
+msgid "You cannot login using this account as it has been deactivated."
+msgstr "আপনি এই একাউন্ট ব্যবহার করতে পারবেন না কনকি ইটা নিষ্ক্রিয় করা হয়েছে"
+
+#: views.py:50
+msgid "You've successfully been logged in!"
+msgstr "আপনাকে সফলভাবে লগ ইন করা হয়েছে!"
+
+#: views.py:72
+msgid "You have successfully been logged out."
+msgstr "আপনি সফলভাবে লগ আউট হয়েছেন."
+
+#: views.py:105
+msgid "Your item has been created!"
+msgstr "আপনার আইটেম তয়রী হয়ে গেছে!"
+
+#: views.py:123
+msgid "Sorry, but your query failed."
+msgstr "দুঃখিত, কিন্তু আপনার প্রশ্নের ব্যর্থ হয়েছে."
+
+#: views.py:151
+msgid "Item updated"
+msgstr "আইটেম তা পরিবর্তন করা হয়েগাছে।"
+
+#: views.py:168
+msgid "The item has been deleted successfully."
+msgstr "আইটেম সফলভাবে মুছে দেওয়া হয়েছে"
+
+#: views.py:195
+msgid "Sorry, but administrators cannot deactivate their own accounts."
+msgstr ""
+"দুঃখিত, কিন্তু অ্যাডমিনিস্ট্রেটররা তাদের নিজেদের অ্যাকাউন্ট নিষ্ক্রিয় "
+"করতে পারবেন না."
+
+#: views.py:196
+msgid "Please ask another administrator to deactivate your account."
+msgstr "আপনার অ্যাকাউন্ট নিষ্ক্রিয় অন্য প্রশাসক জিজ্ঞাসা করুন."
+
+#: views.py:217
+msgid "Sorry, but administrators cannot delete their accounts."
+msgstr "দুঃখিত, কিন্তু অ্যাডমিনিস্ট্রেটররা তাদের অ্যাকাউন্ট মুছে দিতে পারেন."
+
+#: views.py:218
+msgid ""
+"Please ask another administrator to deactivate your account, or to make "
+"you a regular user."
+msgstr ""
+"অন্য প্রশাসক আপনার অ্যাকাউন্ট নিষ্ক্রিয় করার চাইতে, অথবা আপনি একটি "
+"নিয়মিত ব্যবহারকারী না দয়া করে."
+
+#: views.py:225
+msgid "Your account has successfully been deleted."
+msgstr "আপনার অ্যাকাউন্ট সফলভাবে মুছে দেওয়া হয়েছে."
+
+#: templates/navbar.fragment.html:12
+msgid "Items"
+msgstr "আইটেম গুলো"
+
+#: templates/navbar.fragment.html:14
+msgid "Messages"
+msgstr "সংবাদ"
+
+#: templates/navbar.fragment.html:17
+msgid "Users"
+msgstr "ব্যবহারকারীদের"
+
+#: templates/navbar.fragment.html:21
+msgid "Search"
+msgstr "অনুসন্ধান"
+
+#: templates/navbar.fragment.html:30
+msgid "Logout"
+msgstr "লগ আউট"
+
+#: templates/navbar.fragment.html:40 templates/auth/login.html:20
+msgid "Login"
+msgstr "লগ ইন"
+
+#: templates/item/form.fragment.html:22
+msgid "Create Item"
+msgstr "আইটেম বানাও"
+
+#: templates/item/form.fragment.html:23 templates/item/form.fragment.html:26
+msgid "Cancel"
+msgstr "রদ কর"
+
+#: templates/item/form.fragment.html:25
+msgid "Update Item"
+msgstr "আইটেম তা পরিবর্তন করা"
+
+#: templates/item/item.fragment.html:11
+msgid "Details"
+msgstr "বিস্তারিত"
+
+#: templates/item/item.fragment.html:13
+msgid "Update"
+msgstr "পরিবর্তন"
+
+#: templates/item/item.fragment.html:16 templates/user/user.fragment.html:12
+msgid "Delete"
+msgstr "মুছে ফেলা"
+
+#: templates/user/user.fragment.html:7
+msgid "Deactivate"
+msgstr "নিষ্ক্রিয় কোরো"
+
+#: templates/user/user.fragment.html:9
+msgid "Activate"
+msgstr "সক্রিয় কোরো"
+
