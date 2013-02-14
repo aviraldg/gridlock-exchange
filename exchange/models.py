@@ -194,6 +194,10 @@ class Item(ndb.Model):
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)
 
+    @property
+    def average_rating(self):
+        return FeedbackAggregate.for_key(self.key).average_rating
+
     @staticmethod
     def _keywordize(value):
         from .utils import punct_re
@@ -334,3 +338,60 @@ class Message(ndb.Model):
         conversation.messages.append(message.key)
         conversation.put()
 
+
+class FeedbackAggregate(ndb.Model):
+    target = ndb.KeyProperty()
+    count = ndb.IntegerProperty(default=0)
+    total_rating = ndb.IntegerProperty(default=0)
+    average_rating = ndb.ComputedProperty(lambda self: self.total_rating / self.count)
+    i_keys = ndb.KeyProperty(repeated=True)
+
+    @staticmethod
+    def for_key(target_key):
+        return FeedbackAggregate.get_by_id(target_key.urlsafe())
+
+    @staticmethod
+    def get_or_create(target):
+        fa = FeedbackAggregate.get_by_id(target.urlsafe())
+        if fa == None:
+            fa = FeedbackAggregate(id=target.urlsafe(), target=target)
+        return fa
+
+    def update_rating(self, key, old_rating, new_rating):
+        if key not in self.i_keys:
+            self.i_keys.append(key)
+            self.total_rating += new_rating
+            self.count += 1
+        else:
+            self.total_rating += -old_rating + new_rating
+
+    def delete_rating(self, key, rating):
+        self.count -= 1
+        self.total_rating -= rating
+        self.i_keys.remove(key)
+
+
+class Feedback(ndb.Model):
+    target = ndb.KeyProperty()
+    author = ndb.KeyProperty(User)
+    rating = ndb.IntegerProperty(choices=range(1, 6))
+    feedback = ndb.StringProperty()
+
+    @staticmethod
+    @ndb.transactional(xg=True)
+    def add_or_update(target, author, rating, feedback):
+        f = Feedback.get_or_create(target, author)
+        old_rating = f.rating
+        f.rating = rating
+        f.feedback = feedback
+        fk = f.put()
+        fa = FeedbackAggregate.get_or_create(target)
+        fa.update_rating(fk, old_rating, rating)
+        fa.put()
+
+    @staticmethod
+    def get_or_create(target, author):
+        f = Feedback.get_by_id(target.urlsafe() + author.urlsafe())
+        if f == None:
+            f = Feedback(id=target.urlsafe() + author.urlsafe(), target=target, author=author)
+        return f

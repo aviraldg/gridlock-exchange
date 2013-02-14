@@ -1,0 +1,25 @@
+{% macro render_form(form, action) %}
+    <form class="form-horizontal" method="post" action="{{ action }}" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {% for field in form %}
+            {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
+                {{ field }}
+            {% else %}
+                <div class="control-group {% if field.errors %}error{% endif %}">
+                    {{ field.label(class="control-label") }}
+                    <div class="controls">
+                        {{ field }}
+                        {% if field.errors %}
+                            <span class="help-inline">{{ field.errors|join(', ') }}</span>
+                        {% elif field.description %}
+                            <span class="help-inline">{{ field.description }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="form-actions">
+            {{ caller() }}
+        </div>
+    </form>
+{% endmacro %}

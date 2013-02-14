@@ -9,6 +9,17 @@ from google.appengine.ext import ndb
 from google.appengine.datastore.datastore_query import Cursor
 from cgi import FieldStorage
 
+# Why is this here? (who knows?)
+
+TEAPOT = '''I'm a little teapot,
+Short and stout,
+Here is my handle,
+Here is my spout,
+When I get all steamed up,
+Hear me shout,
+Tip me over and pour me out!
+'''.replace('\n', '<br>')
+
 
 class ItemQuery:
     """

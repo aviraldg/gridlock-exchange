@@ -5,14 +5,14 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from google.appengine.api import search
 import datetime
 from . import app
-from .models import User, Item, Price, Conversation, Message
-from .utils import slugify, ItemQuery, to_fieldstorage
+from .models import User, Item, Price, Conversation, Message, Feedback, FeedbackAggregate
+from .utils import slugify, ItemQuery, to_fieldstorage, TEAPOT
 from .decorators import role_required, condition_required
 import forms
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 from exchange.forms import ItemForm
 from wtforms import ValidationError
-from google.appengine.ext import blobstore
+from google.appengine.ext import blobstore, ndb
 
 
 @app.route('/')
@@ -119,6 +119,8 @@ def item_index():
     # TODO Partial-match search
 
     if 'q' in request.args:
+        if request.args['q'].strip().lower() == 'htcpcp':
+            abort(418, TEAPOT)
         iq = ItemQuery.search(request.args['q'].strip().lower())
     else:
         iq = ItemQuery.query()
@@ -134,8 +136,8 @@ def item_index():
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):
     item = Item.get_or_404(id, slug)
-
-    return render_template('item/item.html', item=item)
+    feedback_form = forms.FeedbackForm()
+    return render_template('item/item.html', item=item, feedback_form=feedback_form)
 
 @app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
 @login_required
@@ -274,6 +276,19 @@ def message_conversation(id):
 
     return render_template('message/conversation.html', conversation=c, messages=page[0], cursor=page[1],
                            has_more=page[2], message_send_form=forms.MessageSendForm())
+
+@app.route('/feedback/<string:key>/add', methods=['POST'])
+@login_required
+def feedback_add(key):
+    k = ndb.Key(urlsafe=key)
+
+    form = forms.FeedbackForm()
+
+    if form.validate_on_submit():
+        Feedback.add_or_update(k, current_user.key, form.rating.data, form.feedback.data)
+        flash(_LT('Your feedback has been submitted. Thanks!'), 'success')
+        return redirect(request.args.get('next', url_for('item_index')))
+
 
 @app.route('/user/data-liberation/')
 @app.route('/user/data-liberation/<string:filename>')

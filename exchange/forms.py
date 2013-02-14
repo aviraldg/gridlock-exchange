@@ -3,6 +3,7 @@ from flask.ext.wtf import Form, TextField, PasswordField, TextAreaField, \
 from flask.ext.wtf import html5, file
 from flask.ext.login import current_user
 from wtforms import ValidationError
+from wtforms.fields.core import SelectField
 from wtforms.validators import number_range
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 from google.appengine.api import images
@@ -56,3 +57,7 @@ class UserDeleteForm(Form):
 class MessageSendForm(Form):
     to = TextField(_LT('To'), validators=[required()])
     message = TextAreaField(_LT('Message'))
+
+class FeedbackForm(Form):
+    rating = SelectField(_LT('Rating'), choices=zip(range(1, 6), range(1, 6)), validators=[required()], coerce=int)
+    feedback = TextAreaField(_LT('Feedback'))
