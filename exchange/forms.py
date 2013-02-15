@@ -38,6 +38,7 @@ class ItemForm(Form):
                                                     number_range(min=1)])
     image = file.FileField(_LT('Image'))
     youtube = TextField(_LT('Youtube Video URL'))
+    private_viewers = TextField(_LT('Private Viewers'), description='(comma separated usernames)')
     active = BooleanField(_LT('Active'), default=True)
 
 

@@ -64,7 +64,7 @@ class ItemQuery:
                 r_items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in results.results])
 
                 for i, item in enumerate(r_items):
-                    if item.active or item.seller_id == current_user.get_id():
+                    if item.viewable_by(current_user):
                         items.append(item)
                         count -= 1
                         if count == 0:
@@ -80,7 +80,7 @@ class ItemQuery:
             r_iter = results.iter(produce_cursors=True)
             cursor_string = None
             for item in r_iter:
-                if item.active or item.seller_id == current_user.get_id():
+                if item.viewable_by(current_user):
                     items.append(item)
                     count -= 1
                 if count == 0:

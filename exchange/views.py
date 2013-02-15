@@ -105,6 +105,8 @@ def item_create():
             item.image = blob.key()
         item.youtube = form.youtube.data
         item.active = form.active.data
+        private_viewer_usernames = [_.strip() for _ in form.private_viewers.data.split(',')]
+        item.private_viewer_keys = [user.key for user in User.query(User.username.IN(private_viewer_usernames))]
         k = item.put()
 
         flash(_T('Your item has been created!'), 'success')
@@ -148,12 +150,15 @@ def item_update(id, slug):
         abort(403)
 
     form = ItemForm(title=item.title, description=item.description,
-        price=item.price.fixed_value/100, youtube=item.youtube)
+        price=item.price.fixed_value/100, youtube=item.youtube,
+        private_viewers=','.join([user.username for user in ndb.get_multi(item.private_viewer_keys)]))
 
     if form.validate_on_submit():
         item.title = form.title.data
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        private_viewer_usernames = [_.strip() for _ in form.private_viewers.data.split(',')]
+        item.private_viewer_keys = [user.key for user in User.query(User.username.IN(private_viewer_usernames))]
         if form.image.has_file():
             app.logger.debug(form.image.data)
             app.logger.debug(dir(form.image.data))

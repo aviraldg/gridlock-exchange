@@ -190,6 +190,7 @@ class Item(ndb.Model):
     image = ndb.BlobKeyProperty()
     youtube = ndb.StringProperty()
     youtube_rendered = ndb.ComputedProperty(lambda self: _youtube_render(self.youtube) if self.youtube else '')
+    private_viewer_keys = ndb.KeyProperty(User, repeated=True)
 
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)
@@ -246,6 +247,11 @@ class Item(ndb.Model):
 
     def editable_by(self, user):
         return user.get_id() == unicode(self.seller_id) or user.has_role('admin')
+
+    def viewable_by(self, user):
+        return (self.active and (len(self.private_viewer_keys) == 0 or
+                                 user.key in self.private_viewer_keys)) or \
+               self.seller_id == user.get_id() or user.has_role('admin')
 
     def _to_document(self, id=None):
         """
