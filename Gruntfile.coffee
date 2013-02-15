@@ -25,11 +25,17 @@ module.exports = (grunt) ->
           dest: 'static/'
           filter: 'isFile'
         ]
+    coffee:
+      dist:
+        files: [
+          src: 'static-src/coffee/app.coffee'
+          dest: 'static/coffee/app.coffee.js'
+        ]
     uglify:
       dist:
         files: [
           src: ['static-src/js/plugins.js',
-            'static-src/js/bootstrap.js', 'static-src/js/main.js']
+            'static-src/js/bootstrap.js', 'static-src/js/main.js', 'static/coffee/app.coffee.js']
           dest: 'static/js/app.js'
         ,
           src: 'static-src/js/vendor/jquery-1.9.0.js'
@@ -44,7 +50,8 @@ module.exports = (grunt) ->
           src: ['static-src/css/normalize.css',
             'static-src/css/main.css',
             'static-src/css/bootstrap.css',
-            'static-src/css/bootstrap-responsive.css']
+            'static-src/css/bootstrap-responsive.css',
+            'static-src/css/chosen.css']
           dest: 'static/css/lib.min.css',
         ,
           src: 'static/css/app.css',
@@ -67,4 +74,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-mincss'
 
-  grunt.registerTask 'default', ['copy', 'uglify', 'compass', 'mincss']
+  grunt.registerTask 'default', ['copy', 'coffee', 'uglify', 'compass', 'mincss']

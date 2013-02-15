@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    {% import "form_helpers.html" as form_helpers %}
+    {% call form_helpers.render_form(collection_form, url_for('collection_create')) %}
+        <input type="submit" class="btn btn-primary" value="{{ _('Create') }}">
+    {% endcall %}
+{% endblock %}

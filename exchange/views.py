@@ -5,7 +5,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from google.appengine.api import search
 import datetime
 from . import app
-from .models import User, Item, Price, Conversation, Message, Feedback, FeedbackAggregate
+from .models import User, Item, Price, Conversation, Message, Feedback, FeedbackAggregate, Collection
 from .utils import slugify, ItemQuery, to_fieldstorage, TEAPOT
 from .decorators import role_required, condition_required
 import forms
@@ -123,6 +123,8 @@ def item_index():
     if 'q' in request.args:
         if request.args['q'].strip().lower() == 'htcpcp':
             abort(418, TEAPOT)
+        elif request.args['q'].strip().lower() == 'about:credits':
+            return redirect('/humans.txt')
         iq = ItemQuery.search(request.args['q'].strip().lower())
     else:
         iq = ItemQuery.query()
@@ -293,6 +295,40 @@ def feedback_add(key):
         Feedback.add_or_update(k, current_user.key, form.rating.data, form.feedback.data)
         flash(_LT('Your feedback has been submitted. Thanks!'), 'success')
         return redirect(request.args.get('next', url_for('item_index')))
+
+@app.route('/collection/')
+def collection_index():
+    cq = Collection.query(Collection.author_key == current_user.key)
+    collections, cursor, has_more = cq.fetch_page(10)
+    return render_template('collection/index.html', collections=collections, cursor=cursor, has_more=has_more)
+
+@app.route('/collection/<int:id>/')
+def collection(id):
+    collection = Collection.get_by_id(id)
+    return render_template('collection/collection.html', collection=collection)
+
+@app.route('/collection/create', methods=['GET', 'POST'])
+def collection_create():
+    collection_form = forms.CollectionForm()
+    # XXX This could potentially be a problem, but given the current scale of the app, it shouldn't
+    # cause much trouble.
+    # NOTE: Because we populate the choices here and validate_on_submit later, even if the user
+    # modifies the options by hand, they'll still be verified against these choices.
+    collection_form.item_ids.choices = [(item.key.id(), '#%s - %s' % (item.key.id(), item.title)) for item in
+                                        Item.query(Item.seller_id == current_user.get_id()).fetch(100000)]
+
+    if collection_form.validate_on_submit():
+        c = Collection()
+        c.title = collection_form.title.data
+        c.description = collection_form.description.data
+        c.author = current_user
+        c.item_keys = [ndb.Key(Item, id) for id in collection_form.item_ids.data]
+        k = c.put()
+
+        flash(_LT('Your collection has been created successfully!'), 'success')
+        return redirect(url_for('collection', id=k.id()))
+
+    return render_template('collection/create.html', collection_form=collection_form)
 
 
 @app.route('/user/data-liberation/')

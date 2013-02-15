@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if collections %}
+        <ul class="nav nav-tabs nav-stacked">
+            {% for collection in collections %}
+                <li><a href="""><strong>{{ collection.title }}</strong>&nbsp;<em>{{ collection.description }}</em></a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">
+            Sorry, no collections to show here.
+        </div>
+    {% endif %}
+{% endblock %}

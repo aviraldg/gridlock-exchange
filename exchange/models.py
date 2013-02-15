@@ -401,3 +401,28 @@ class Feedback(ndb.Model):
         if f == None:
             f = Feedback(id=target.urlsafe() + author.urlsafe(), target=target, author=author)
         return f
+
+class Collection(ndb.Model):
+    author_key = ndb.KeyProperty(User)
+
+    @property
+    def author(self):
+        return self.author_key.get()
+
+    @author.setter
+    def author(self, user):
+        self.author_key = user.key
+
+    title = ndb.StringProperty()
+    description = ndb.StringProperty()
+    item_keys = ndb.KeyProperty(Item, repeated=True)
+
+    @property
+    def items(self):
+        return ndb.get_multi(self.item_keys)
+
+
+    @items.setter
+    def items(self, items):
+        self.item_keys = [item.key for item in items]
+

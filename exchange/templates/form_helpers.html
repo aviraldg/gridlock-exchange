@@ -6,7 +6,11 @@
                 {{ field }}
             {% else %}
                 <div class="control-group {% if field.errors %}error{% endif %}">
-                    {{ field.label(class="control-label") }}
+                    {% if field.flags.required %}
+                        {{ field.label(class="control-label required") }}
+                    {% else %}
+                        {{ field.label(class="control-label") }}
+                    {% endif %}
                     <div class="controls">
                         {{ field }}
                         {% if field.errors %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    <heading>
+        <h1>{{ collection.title }}</h1>
+    </heading>
+    {% if collection.items %}
+        <ul class="nav nav-tabs nav-stacked">
+            {% for item in collection.items %}
+                {% include "item/item.fragment.html" %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">
+            Sorry, no items to show here.
+        </div>
+    {% endif %}
+{% endblock %}
