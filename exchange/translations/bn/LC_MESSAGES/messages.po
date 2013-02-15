@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gridlock Exchange\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 23:35+0530\n"
-"PO-Revision-Date: 2013-02-12 23:37+0530\n"
+"POT-Creation-Date: 2013-02-15 23:28+0530\n"
+"PO-Revision-Date: 2013-02-15 23:38+0530\n"
 "Last-Translator: Aviral Dasgupta <me@aviraldg.com>\n"
 "Language-Team: Aviral Dasgupta <me@aviraldg.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Generated-By: Babel 0.9.6\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: forms.py:13 forms.py:20 forms.py:50
+#: forms.py:13 forms.py:20 forms.py:51
 msgid "Username"
 msgstr "ব্যবহারকারীর নাম"
 
@@ -37,11 +37,11 @@ msgstr "পাসওয়ার্ড"
 msgid "Remember me"
 msgstr "আমাকে মনে রেখো"
 
-#: forms.py:34
+#: forms.py:34 forms.py:66
 msgid "Title"
 msgstr "বিষয়"
 
-#: forms.py:35
+#: forms.py:35 forms.py:67
 msgid "Description"
 msgstr "বিবরণ"
 
@@ -58,20 +58,36 @@ msgid "Youtube Video URL"
 msgstr "Youtube ভিডিও URL"
 
 #: forms.py:40
+msgid "Private Viewers"
+msgstr "ব্যক্তিগত দর্শকরা"
+
+#: forms.py:41 templates/item/item.fragment.html:18
 msgid "Active"
 msgstr "সক্রিয়"
 
-#: forms.py:54
+#: forms.py:55
 msgid "The username entered must match your username exactly."
 msgstr "ব্যবহারকারীর নাম প্রবেশ করানো আপনার ব্যবহারকারী নাম ঠিক মেলানো."
 
-#: forms.py:57
+#: forms.py:58
 msgid "To"
 msgstr "প্রাপক"
 
-#: forms.py:58
+#: forms.py:59
 msgid "Message"
 msgstr "সংবাদ"
+
+#: forms.py:62
+msgid "Rating"
+msgstr "নির্ধারণ"
+
+#: forms.py:63 templates/item/item.html:4
+msgid "Feedback"
+msgstr "পরামর্শ"
+
+#: forms.py:68 templates/navbar.fragment.html:12
+msgid "Items"
+msgstr "আইটেম গুলো"
 
 #: views.py:33
 msgid "You've been registered!"
@@ -93,36 +109,36 @@ msgstr "আপনাকে সফলভাবে লগ ইন করা হয�
 msgid "You have successfully been logged out."
 msgstr "আপনি সফলভাবে লগ আউট হয়েছেন."
 
-#: views.py:110
+#: views.py:112
 msgid "Your item has been created!"
 msgstr "আপনার আইটেম তয়রী হয়ে গেছে!"
 
-#: views.py:129
+#: views.py:135
 msgid "Sorry, but your query failed."
 msgstr "দুঃখিত, কিন্তু আপনার প্রশ্নের ব্যর্থ হয়েছে."
 
-#: views.py:163
+#: views.py:172
 msgid "Item updated"
 msgstr "আইটেম তা পরিবর্তন করা হয়েগাছে।"
 
-#: views.py:181
+#: views.py:190
 msgid "The item has been deleted successfully."
 msgstr "আইটেম সফলভাবে মুছে দেওয়া হয়েছে"
 
-#: views.py:208
+#: views.py:217
 msgid "Sorry, but administrators cannot deactivate their own accounts."
 msgstr ""
 "দুঃখিত, কিন্তু অ্যাডমিনিস্ট্রেটররা তাদের নিজেদের অ্যাকাউন্ট নিষ্ক্রিয় করতে পারবেন না."
 
-#: views.py:209
+#: views.py:218
 msgid "Please ask another administrator to deactivate your account."
 msgstr "আপনার অ্যাকাউন্ট নিষ্ক্রিয় অন্য প্রশাসক জিজ্ঞাসা করুন."
 
-#: views.py:230
+#: views.py:239
 msgid "Sorry, but administrators cannot delete their accounts."
 msgstr "দুঃখিত, কিন্তু অ্যাডমিনিস্ট্রেটররা তাদের অ্যাকাউন্ট মুছে দিতে পারেন."
 
-#: views.py:231
+#: views.py:240
 msgid ""
 "Please ask another administrator to deactivate your account, or to make you "
 "a regular user."
@@ -130,33 +146,45 @@ msgstr ""
 "অন্য প্রশাসক আপনার অ্যাকাউন্ট নিষ্ক্রিয় করার চাইতে, অথবা আপনি একটি নিয়মিত "
 "ব্যবহারকারী না দয়া করে."
 
-#: views.py:238
+#: views.py:247
 msgid "Your account has successfully been deleted."
 msgstr "আপনার অ্যাকাউন্ট সফলভাবে মুছে দেওয়া হয়েছে."
 
-#: templates/navbar.fragment.html:12
-msgid "Items"
-msgstr "আইটেম গুলো"
+#: views.py:296
+msgid "Your feedback has been submitted. Thanks!"
+msgstr "আপনার মতামত জমা দেওয়া হয়েছে. ধন্যবাদ!"
+
+#: views.py:328
+msgid "Your collection has been created successfully!"
+msgstr "আপনার সংগ্রহে সফলভাবে তৈরি করা হয়েছে!"
 
 #: templates/navbar.fragment.html:14
 msgid "Messages"
 msgstr "সংবাদ"
 
-#: templates/navbar.fragment.html:17
+#: templates/navbar.fragment.html:15
+msgid "Collections"
+msgstr "সংগ্রহ"
+
+#: templates/navbar.fragment.html:18
 msgid "Users"
 msgstr "ব্যবহারকারীদের"
 
-#: templates/navbar.fragment.html:21
+#: templates/navbar.fragment.html:22
 msgid "Search"
 msgstr "অনুসন্ধান"
 
-#: templates/navbar.fragment.html:30
+#: templates/navbar.fragment.html:31
 msgid "Logout"
 msgstr "লগ আউট"
 
-#: templates/navbar.fragment.html:40 templates/auth/login.html:20
+#: templates/navbar.fragment.html:41 templates/auth/login.html:20
 msgid "Login"
 msgstr "লগ ইন"
+
+#: templates/collection/create.html:5
+msgid "Create"
+msgstr "বানিয়ে দাও"
 
 #: templates/item/form.fragment.html:22
 msgid "Create Item"
@@ -170,17 +198,25 @@ msgstr "রদ কর"
 msgid "Update Item"
 msgstr "আইটেম তা পরিবর্তন করা"
 
-#: templates/item/item.fragment.html:21
+#: templates/item/item.fragment.html:18
+msgid "Inactive"
+msgstr "নিষ্ক্রিয়"
+
+#: templates/item/item.fragment.html:22
 msgid "Details"
 msgstr "বিস্তারিত"
 
-#: templates/item/item.fragment.html:23
+#: templates/item/item.fragment.html:24
 msgid "Update"
 msgstr "পরিবর্তন"
 
-#: templates/item/item.fragment.html:26 templates/user/user.fragment.html:17
+#: templates/item/item.fragment.html:27 templates/user/user.fragment.html:17
 msgid "Delete"
 msgstr "মুছে ফেলা"
+
+#: templates/item/item.html:7
+msgid "Add/Update"
+msgstr "যোগ/পরিবর্তন কোরো"
 
 #: templates/user/user.fragment.html:4
 msgid "Verified Student"

@@ -32,7 +32,7 @@ $ ->
   $('select').chosen() # Initialize Chosen (for better select widgets)
 
   if history.pushState
-    $('body').on 'click', 'a', (e) ->
+    $('body').on 'click', 'a:not([no-jqload])', (e) ->
       history.pushState {'url': this.href}, '', this.href
       loadPage(this.href)
       e.preventDefault()

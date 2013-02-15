@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 23:35+0530\n"
+"POT-Creation-Date: 2013-02-15 23:28+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: forms.py:13 forms.py:20 forms.py:50
+#: forms.py:13 forms.py:20 forms.py:51
 msgid "Username"
 msgstr ""
 
@@ -37,11 +37,11 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
-#: forms.py:34
+#: forms.py:34 forms.py:66
 msgid "Title"
 msgstr ""
 
-#: forms.py:35
+#: forms.py:35 forms.py:67
 msgid "Description"
 msgstr ""
 
@@ -58,19 +58,35 @@ msgid "Youtube Video URL"
 msgstr ""
 
 #: forms.py:40
+msgid "Private Viewers"
+msgstr ""
+
+#: forms.py:41 templates/item/item.fragment.html:18
 msgid "Active"
 msgstr ""
 
-#: forms.py:54
+#: forms.py:55
 msgid "The username entered must match your username exactly."
 msgstr ""
 
-#: forms.py:57
+#: forms.py:58
 msgid "To"
 msgstr ""
 
-#: forms.py:58
+#: forms.py:59
 msgid "Message"
+msgstr ""
+
+#: forms.py:62
+msgid "Rating"
+msgstr ""
+
+#: forms.py:63 templates/item/item.html:4
+msgid "Feedback"
+msgstr ""
+
+#: forms.py:68 templates/navbar.fragment.html:12
+msgid "Items"
 msgstr ""
 
 #: views.py:33
@@ -93,66 +109,78 @@ msgstr ""
 msgid "You have successfully been logged out."
 msgstr ""
 
-#: views.py:110
+#: views.py:112
 msgid "Your item has been created!"
 msgstr ""
 
-#: views.py:129
+#: views.py:135
 msgid "Sorry, but your query failed."
 msgstr ""
 
-#: views.py:163
+#: views.py:172
 msgid "Item updated"
 msgstr ""
 
-#: views.py:181
+#: views.py:190
 msgid "The item has been deleted successfully."
 msgstr ""
 
-#: views.py:208
+#: views.py:217
 msgid "Sorry, but administrators cannot deactivate their own accounts."
 msgstr ""
 
-#: views.py:209
+#: views.py:218
 msgid "Please ask another administrator to deactivate your account."
 msgstr ""
 
-#: views.py:230
+#: views.py:239
 msgid "Sorry, but administrators cannot delete their accounts."
 msgstr ""
 
-#: views.py:231
+#: views.py:240
 msgid ""
 "Please ask another administrator to deactivate your account, or to make "
 "you a regular user."
 msgstr ""
 
-#: views.py:238
+#: views.py:247
 msgid "Your account has successfully been deleted."
 msgstr ""
 
-#: templates/navbar.fragment.html:12
-msgid "Items"
+#: views.py:296
+msgid "Your feedback has been submitted. Thanks!"
+msgstr ""
+
+#: views.py:328
+msgid "Your collection has been created successfully!"
 msgstr ""
 
 #: templates/navbar.fragment.html:14
 msgid "Messages"
 msgstr ""
 
-#: templates/navbar.fragment.html:17
+#: templates/navbar.fragment.html:15
+msgid "Collections"
+msgstr ""
+
+#: templates/navbar.fragment.html:18
 msgid "Users"
 msgstr ""
 
-#: templates/navbar.fragment.html:21
+#: templates/navbar.fragment.html:22
 msgid "Search"
 msgstr ""
 
-#: templates/navbar.fragment.html:30
+#: templates/navbar.fragment.html:31
 msgid "Logout"
 msgstr ""
 
-#: templates/navbar.fragment.html:40 templates/auth/login.html:20
+#: templates/navbar.fragment.html:41 templates/auth/login.html:20
 msgid "Login"
+msgstr ""
+
+#: templates/collection/create.html:5
+msgid "Create"
 msgstr ""
 
 #: templates/item/form.fragment.html:22
@@ -167,16 +195,24 @@ msgstr ""
 msgid "Update Item"
 msgstr ""
 
-#: templates/item/item.fragment.html:21
+#: templates/item/item.fragment.html:18
+msgid "Inactive"
+msgstr ""
+
+#: templates/item/item.fragment.html:22
 msgid "Details"
 msgstr ""
 
-#: templates/item/item.fragment.html:23
+#: templates/item/item.fragment.html:24
 msgid "Update"
 msgstr ""
 
-#: templates/item/item.fragment.html:26 templates/user/user.fragment.html:17
+#: templates/item/item.fragment.html:27 templates/user/user.fragment.html:17
 msgid "Delete"
+msgstr ""
+
+#: templates/item/item.html:7
+msgid "Add/Update"
 msgstr ""
 
 #: templates/user/user.fragment.html:4

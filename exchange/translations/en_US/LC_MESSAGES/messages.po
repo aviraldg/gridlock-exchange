@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gridlock Exchange\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-02-12 23:35+0530\n"
-"PO-Revision-Date: 2013-02-12 23:39+0530\n"
+"POT-Creation-Date: 2013-02-15 23:28+0530\n"
+"PO-Revision-Date: 2013-02-15 23:39+0530\n"
 "Last-Translator: Aviral Dasgupta <me@aviraldg.com>\n"
 "Language-Team: Aviral Dasgupta <me@aviraldg.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Generated-By: Babel 0.9.6\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: forms.py:13 forms.py:20 forms.py:50
+#: forms.py:13 forms.py:20 forms.py:51
 msgid "Username"
 msgstr "Username"
 
@@ -37,11 +37,11 @@ msgstr "Password"
 msgid "Remember me"
 msgstr "Remember me"
 
-#: forms.py:34
+#: forms.py:34 forms.py:66
 msgid "Title"
 msgstr "Title"
 
-#: forms.py:35
+#: forms.py:35 forms.py:67
 msgid "Description"
 msgstr "Description"
 
@@ -58,20 +58,36 @@ msgid "Youtube Video URL"
 msgstr "Youtube Video URL"
 
 #: forms.py:40
+msgid "Private Viewers"
+msgstr "Private Viewers"
+
+#: forms.py:41 templates/item/item.fragment.html:18
 msgid "Active"
 msgstr "Active"
 
-#: forms.py:54
+#: forms.py:55
 msgid "The username entered must match your username exactly."
 msgstr "The username entered must match your username exactly."
 
-#: forms.py:57
+#: forms.py:58
 msgid "To"
 msgstr "To"
 
-#: forms.py:58
+#: forms.py:59
 msgid "Message"
 msgstr "Message"
+
+#: forms.py:62
+msgid "Rating"
+msgstr "Rating"
+
+#: forms.py:63 templates/item/item.html:4
+msgid "Feedback"
+msgstr "Feedback"
+
+#: forms.py:68 templates/navbar.fragment.html:12
+msgid "Items"
+msgstr "Items"
 
 #: views.py:33
 msgid "You've been registered!"
@@ -93,35 +109,35 @@ msgstr "You've successfully been logged in!"
 msgid "You have successfully been logged out."
 msgstr "You have successfully been logged out."
 
-#: views.py:110
+#: views.py:112
 msgid "Your item has been created!"
 msgstr "Your item has been created!"
 
-#: views.py:129
+#: views.py:135
 msgid "Sorry, but your query failed."
 msgstr "Sorry, but your query failed."
 
-#: views.py:163
+#: views.py:172
 msgid "Item updated"
 msgstr "Item updated"
 
-#: views.py:181
+#: views.py:190
 msgid "The item has been deleted successfully."
 msgstr "The item has been deleted successfully."
 
-#: views.py:208
+#: views.py:217
 msgid "Sorry, but administrators cannot deactivate their own accounts."
 msgstr "Sorry, but administrators cannot deactivate their own accounts."
 
-#: views.py:209
+#: views.py:218
 msgid "Please ask another administrator to deactivate your account."
 msgstr "Please ask another administrator to deactivate your account."
 
-#: views.py:230
+#: views.py:239
 msgid "Sorry, but administrators cannot delete their accounts."
 msgstr "Sorry, but administrators cannot delete their accounts"
 
-#: views.py:231
+#: views.py:240
 msgid ""
 "Please ask another administrator to deactivate your account, or to make you "
 "a regular user."
@@ -129,33 +145,45 @@ msgstr ""
 "Please ask another administrator to deactivate your account, or to make you "
 "a regular user."
 
-#: views.py:238
+#: views.py:247
 msgid "Your account has successfully been deleted."
 msgstr "Your account has successfully been deleted."
 
-#: templates/navbar.fragment.html:12
-msgid "Items"
-msgstr "Items"
+#: views.py:296
+msgid "Your feedback has been submitted. Thanks!"
+msgstr "Your feedback has been submitted. Thanks!"
+
+#: views.py:328
+msgid "Your collection has been created successfully!"
+msgstr "Your collection has been created successfully!"
 
 #: templates/navbar.fragment.html:14
 msgid "Messages"
 msgstr "Message"
 
-#: templates/navbar.fragment.html:17
+#: templates/navbar.fragment.html:15
+msgid "Collections"
+msgstr "Collections"
+
+#: templates/navbar.fragment.html:18
 msgid "Users"
 msgstr "Users"
 
-#: templates/navbar.fragment.html:21
+#: templates/navbar.fragment.html:22
 msgid "Search"
 msgstr "Search"
 
-#: templates/navbar.fragment.html:30
+#: templates/navbar.fragment.html:31
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/navbar.fragment.html:40 templates/auth/login.html:20
+#: templates/navbar.fragment.html:41 templates/auth/login.html:20
 msgid "Login"
 msgstr "Login"
+
+#: templates/collection/create.html:5
+msgid "Create"
+msgstr "Create"
 
 #: templates/item/form.fragment.html:22
 msgid "Create Item"
@@ -169,17 +197,25 @@ msgstr "Cancel"
 msgid "Update Item"
 msgstr "Update Item"
 
-#: templates/item/item.fragment.html:21
+#: templates/item/item.fragment.html:18
+msgid "Inactive"
+msgstr "Inactive"
+
+#: templates/item/item.fragment.html:22
 msgid "Details"
 msgstr "Details"
 
-#: templates/item/item.fragment.html:23
+#: templates/item/item.fragment.html:24
 msgid "Update"
 msgstr "Update"
 
-#: templates/item/item.fragment.html:26 templates/user/user.fragment.html:17
+#: templates/item/item.fragment.html:27 templates/user/user.fragment.html:17
 msgid "Delete"
 msgstr "Delete"
+
+#: templates/item/item.html:7
+msgid "Add/Update"
+msgstr "Add/Update"
 
 #: templates/user/user.fragment.html:4
 msgid "Verified Student"
