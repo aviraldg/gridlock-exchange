@@ -1,0 +1,12 @@
+<form class="form-inline" method="POST" action="{{ url_for('message_send') }}">
+    {% for field in message_send_form %}
+        {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
+            {{ field }}
+        {% elif field.short_name == 'to' %}
+            {{ field(style='display:none;') }}
+        {% else %}
+            {{ field(placeholder=field.name) }}
+        {% endif %}
+    {% endfor %}
+    <input type="submit" class="btn btn-primary" value="Send">
+</form>

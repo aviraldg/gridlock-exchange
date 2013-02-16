@@ -56,7 +56,7 @@ class UserDeleteForm(Form):
 
 class MessageSendForm(Form):
     to = TextField(_LT('To'), validators=[required()])
-    message = TextAreaField(_LT('Message'))
+    message = TextField(_LT('Message'))
 
 class FeedbackForm(Form):
     rating = SelectField(_LT('Rating'), choices=zip(range(1, 6), range(1, 6)), validators=[required()], coerce=int)

@@ -284,6 +284,9 @@ class Conversation(ndb.Model):
 
     # The validator is used to make this behave like a Set
     participant_keys = ndb.KeyProperty(repeated=True, kind=User)#, validator=lambda prop, value: sorted(set(value)))
+    @property
+    def participants(self):
+        return ndb.get_multi(self.participant_keys)
     # Since we can't do exact queries on repeated properties, this sounds like a good workaround.
     phash = ndb.ComputedProperty(lambda self: Conversation._gen_phash(self.participant_keys))
     # This can either be the ID of an Item (if the conversation is about an item) or empty (if it's a direct message)
@@ -347,10 +350,10 @@ class Message(ndb.Model):
         conversation = Conversation.get_or_create(to_keys.union({author_key}), subject)
 
         message = Message(author_key=author_key, to=conversation.key, content=content)
-        message.put()
+        mk = message.put()
 
         conversation.messages.append(message.key)
-        conversation.put()
+        return mk, conversation.put()
 
 
 class FeedbackAggregate(ndb.Model):

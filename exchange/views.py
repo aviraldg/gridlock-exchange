@@ -270,7 +270,8 @@ def message_send():
 
     if form.validate_on_submit():
         to = User.query(User.username.IN(map(lambda un: un.strip(), form.to.data.split(',')))).fetch(1000)
-        Message.send(current_user, to, '', form.message.data)
+        message_key, conv_key = Message.send(current_user, to, '', form.message.data)
+        return redirect(url_for('message_conversation', id=conv_key.id()) + '#message_%s' % message_key.id())
 
     return render_template('message/send.html', message_send_form=form)
 
@@ -279,6 +280,7 @@ def message_send():
 @login_required
 def message_conversation(id):
     c = Conversation.get_by_id(id)
+    form = forms.MessageSendForm(to=', '.join([p.username for p in c.participants]))
 
     if not c:
         abort(404)
@@ -289,7 +291,7 @@ def message_conversation(id):
     page = Message.query(Message.to == c.key).fetch_page(10)
 
     return render_template('message/conversation.html', conversation=c, messages=page[0], cursor=page[1],
-                           has_more=page[2], message_send_form=forms.MessageSendForm())
+                           has_more=page[2], message_send_form=form)
 
 @app.route('/feedback/<string:key>/add', methods=['POST'])
 @login_required
