@@ -3,7 +3,7 @@ loadPage = (url) ->
     (response, status, xhr) ->
       # if the response isn't HTML, jQuery fails silently
       # in that case, we ought to set the location manually
-      if (xhr.getResponseHeader('Content-Type').lastIndexOf('text/html', 0) is -1) or status isnt 'success'
+      if (xhr.getResponseHeader('Content-Type')?.lastIndexOf('text/html', 0) is -1) or status isnt 'success'
         document.location = url
       else
         $(this).fadeIn()

@@ -37,9 +37,9 @@
         <li>
             {% if has_more %}
                 {%  if 'q' in request.args %}
-                    <a class="load-more" href="{{ url_for('item_index', q=request.args['q'], c=cursor) }}">{{ _('Load More') }}</a>
+                    <a class="load-more" href="{{ url_for('item_index', q=request.args['q'], c=cursor, o=request.args.get('o', 'created')) }}">{{ _('Load More') }}</a>
                 {% else %}
-                    <a class="load-more" href="{{ url_for('item_index', c=cursor) }}">{{ _('Load More') }}</a>
+                    <a class="load-more" href="{{ url_for('item_index', c=cursor, o=request.args.get('o', 'created')) }}">{{ _('Load More') }}</a>
                 {% endif %}
             {% endif %}
         </li>
