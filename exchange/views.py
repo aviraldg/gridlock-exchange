@@ -158,14 +158,12 @@ def item_update(id, slug):
     if not item.editable_by(current_user):
         abort(403)
 
-    form = ItemForm(title=item.title, description=item.description,
-        price=item.price.fixed_value/100, youtube=item.youtube,
-        private_viewers=','.join([user.username for user in ndb.get_multi(item.private_viewer_keys)]))
-
+    form = ItemForm()
     if form.validate_on_submit():
         item.title = form.title.data
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
+        item.active = form.active.data
         private_viewer_usernames = [_.strip() for _ in form.private_viewers.data.split(',')]
         item.private_viewer_keys = [user.key for user in User.query(User.username.IN(private_viewer_usernames))]
         if form.image.has_file():
@@ -179,6 +177,11 @@ def item_update(id, slug):
         flash(_T('Item updated'), 'success')
 
         return redirect(url_for('item', id=id, slug=slug))
+
+    form = ItemForm(title=item.title, description=item.description,
+                    price=item.price.fixed_value / 100, youtube=item.youtube,
+                    private_viewers=','.join([user.username for user in ndb.get_multi(item.private_viewer_keys)]),
+                    active=item.active)
 
     return render_template('item/update.html', form=form, id=id, slug=slug,
                            action=blobstore.create_upload_url(url_for('item_update', id=id, slug=slug)))
