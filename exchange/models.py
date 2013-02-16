@@ -13,6 +13,7 @@ from hashlib import sha512
 from . import app, login_manager
 from markdown import markdown
 from google.appengine.api import urlfetch
+import notify
 import json
 import urllib
 
@@ -343,7 +344,7 @@ class Message(ndb.Model):
     sent = ndb.DateTimeProperty(auto_now_add=True)
 
     @staticmethod
-    def send(author, to, subject, content):
+    def send(author, to, subject, content, do_notify=True):
         author_key = author.key
         to_keys = set(map(lambda t: t.key, to))
 
@@ -353,7 +354,12 @@ class Message(ndb.Model):
         mk = message.put()
 
         conversation.messages.append(message.key)
-        return mk, conversation.put()
+        ck = conversation.put()
+
+        if do_notify:
+            notify.notify(conversation, message, author)
+
+        return mk, ck
 
 
 class FeedbackAggregate(ndb.Model):
