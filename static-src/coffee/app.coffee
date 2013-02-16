@@ -7,7 +7,16 @@ loadPage = (url) ->
         document.location = url
       else
         $(this).fadeIn()
+        initInfiniteScroll()
   )
+
+initInfiniteScroll = ->
+  # Infinite scroll
+  # TODO Should we change the URL here?
+  $('.content').infinitescroll
+    navSelector: '.pager'
+    nextSelector: '.load-more'
+    itemSelector: '.content article'
 
 loadSearchTimeout = null
 prevQuery = ''
@@ -31,6 +40,7 @@ loadSearch = (query) ->
 $ ->
   $('select').chosen() # Initialize Chosen (for better select widgets)
 
+  # OPA emulation (makes app appear snappier)
   if history.pushState
     $('body').on 'click', 'a:not([no-jqload])', (e) ->
       history.pushState {'url': this.href}, '', this.href
@@ -53,4 +63,6 @@ $ ->
     # Load search results in background as user types
     $('.search-query').on 'keyup', ->
       loadSearch this.value
+
+    initInfiniteScroll()
 

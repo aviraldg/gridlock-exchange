@@ -16,9 +16,9 @@
         <li>
             {% if has_more %}
                 {%  if 'q' in request.args %}
-                    <a href="{{ url_for('item_index', q=request.args['q'], c=cursor) }}">{{ _('Load More') }}</a>
+                    <a class="load-more" href="{{ url_for('item_index', q=request.args['q'], c=cursor) }}">{{ _('Load More') }}</a>
                 {% else %}
-                    <a href="{{ url_for('item_index', c=cursor) }}">{{ _('Load More') }}</a>
+                    <a class="load-more" href="{{ url_for('item_index', c=cursor) }}">{{ _('Load More') }}</a>
                 {% endif %}
             {% endif %}
         </li>

@@ -3,7 +3,7 @@
     {% if collections %}
         <ul class="nav nav-tabs nav-stacked">
             {% for collection in collections %}
-                <li><a href="""><strong>{{ collection.title }}</strong>&nbsp;<em>{{ collection.description }}</em></a></li>
+                <li><a href="{{ url_for('collection', id=collection.key.id()) }}"><strong>{{ collection.title }}</strong>&nbsp;<em>{{ collection.description }}</em></a></li>
             {% endfor %}
         </ul>
     {% else %}
