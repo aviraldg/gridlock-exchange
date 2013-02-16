@@ -7,16 +7,7 @@ loadPage = (url) ->
         document.location = url
       else
         $(this).fadeIn()
-        initInfiniteScroll()
   )
-
-initInfiniteScroll = ->
-  # Infinite scroll
-  # TODO Should we change the URL here?
-  $('.content').infinitescroll
-    navSelector: '.pager'
-    nextSelector: '.load-more'
-    itemSelector: '.content article'
 
 loadSearchTimeout = null
 prevQuery = ''
@@ -63,6 +54,4 @@ $ ->
     # Load search results in background as user types
     $('.search-query').on 'keyup', ->
       loadSearch this.value
-
-    initInfiniteScroll()
 

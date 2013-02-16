@@ -13,7 +13,6 @@ from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 from exchange.forms import ItemForm
 from wtforms import ValidationError
 from google.appengine.ext import blobstore, ndb
-import urllib
 
 
 @app.route('/')
@@ -139,7 +138,7 @@ def item_index():
         flash(_T('Sorry, but your query failed.'), 'error')
         return redirect(url_for('index'))
 
-    return render_template('item/index.html', items=items, cursor=urllib.quote_plus(cursor) if cursor else None,
+    return render_template('item/index.html', items=items, cursor=cursor,
                            has_more=more, item_orderings=orderings.keys())
 
 @app.route('/item/<int:id>/<string:slug>')
