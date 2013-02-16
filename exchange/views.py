@@ -121,7 +121,10 @@ def item_index():
     # TODO Partial-match search
 
     orderings = Item.get_orderings()
-    current_ordering = orderings[request.args.get('o', '-created')]
+    ordering = request.args.get('o', '-created')
+    if ordering not in orderings.keys():
+        ordering = '-created'
+    current_ordering = orderings.get(ordering)
 
     if 'q' in request.args:
         if request.args['q'].strip().lower() == 'htcpcp':
