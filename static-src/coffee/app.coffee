@@ -1,18 +1,24 @@
 loadPage = (url) ->
-  $('.content').stop().fadeOut(->
-    $('.loader').slideDown()
-    do ->
-      $('.content').load(url + ' .content',
+  $('.jqload-error').fadeOut ->
+    $('.content').stop().fadeOut ->
+      $('.loader').fadeIn()
+      $('.content').load url + ' .content',
         (response, status, xhr) ->
-          # if the response isn't HTML, jQuery fails silently
-          # in that case, we ought to set the location manually
-          if (xhr.getResponseHeader('Content-Type')?.lastIndexOf('text/html', 0) is -1) or status isnt 'success'
+          $('.loader').slideUp()
+          if status is 'error'
+            if xhr.status is 418
+              document.location = url
+            else
+              $('.jqload-error').fadeIn()
+          else if (xhr.getResponseHeader('Content-Type')?.lastIndexOf('text/html', 0) is -1)
+            # if the response isn't HTML, jQuery fails silently
+            # in that case, we ought to set the location manually
             document.location = url
           else
             elem = this
-            $('.loader').slideUp()
-            do -> $(elem).fadeIn())
-  )#
+            $(elem).fadeIn()
+
+
 
 loadSearchTimeout = null
 prevQuery = ''

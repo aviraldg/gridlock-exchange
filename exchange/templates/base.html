@@ -24,6 +24,10 @@
             <div class="icon-cog icon-4x icon-spin"></div>
         </div>
 
+        <div class="alert alert-error fade in jqload-error" style="display:none;">
+            <strong>Error:</strong> Sorry, but the page you requested could not be loaded. Please try again later.
+        </div>
+
         <div class="content">
             {% with messages = get_flashed_messages(with_categories=True) %}
                 {% for category, message in messages %}
