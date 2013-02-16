@@ -127,7 +127,7 @@ def item_index():
             return redirect('/humans.txt')
         iq = ItemQuery.search(request.args['q'].strip().lower())
     else:
-        iq = ItemQuery.query()
+        iq = ItemQuery.query(None, request.args.get('c'))
 
     try:
         items, cursor, more = iq.fetch(10)
@@ -135,7 +135,7 @@ def item_index():
         flash(_T('Sorry, but your query failed.'), 'error')
         return redirect(url_for('index'))
 
-    return render_template('item/index.html', items=items)
+    return render_template('item/index.html', items=items, cursor=cursor, has_more=more)
 
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):
