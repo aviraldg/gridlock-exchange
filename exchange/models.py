@@ -195,6 +195,14 @@ class Item(ndb.Model):
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)
 
+    @classmethod
+    def get_orderings(cls):
+        props = dict()
+        for prop_name in ('title', 'description', 'created', 'expiry'):
+            props[prop_name] = getattr(cls, prop_name)
+            props['-' + prop_name] = -getattr(cls, prop_name)
+        return props
+
     @property
     def average_rating(self):
         return FeedbackAggregate.for_key(self.key).average_rating

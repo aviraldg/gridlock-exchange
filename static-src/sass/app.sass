@@ -1,12 +1,19 @@
 @import "compass/css3/transition"
+@import font-awesome
 
 body
   padding-top: 60px
-
-a
-  @include transition(0.5s all ease)
 
 .required::after
   content: '*'
   color: red
   font-weight: bold
+
+.ratings
+  cursor: help
+
+.icon-star.on
+  color: #ffb44a
+
+.icon-star.off, .icon-star-empty.off
+  color: lightgray

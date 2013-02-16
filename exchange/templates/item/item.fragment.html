@@ -1,3 +1,4 @@
+{% import "form_helpers.html" as form_helpers %}
 <article itemscope itemtype="http://schema.org/Product">
     <heading>
         <h1><a href="{{ item.url() }}" itemprop="name">{{ item.title }}</a></h1>
@@ -16,7 +17,7 @@
         <span class="badge badge-inverse" itemprop="price">{{ item.price }}</span>
     </span>
     <span class="badge badge-inverse">{{ [_('Inactive'), _('Active')][item.active] }}</span>
-    <div>Average Rating: {{ item.average_rating|default('no ratings') }}</div>
+    {{ form_helpers.render_stars(item.average_rating|default(-1)|int, 5) }}
     <p itemprop="description">{{ item.description_rendered|safe }}</p>
     <div class="form-actions">
         <a href="{{ item.url() }}" class="btn">{{ _('Details') }}</a>

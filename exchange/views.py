@@ -120,14 +120,17 @@ def item_index():
     # TODO Paginate results properly, and add restrictions on kinds of queries possible.
     # TODO Partial-match search
 
+    orderings = Item.get_orderings()
+    current_ordering = orderings[request.args.get('o', '-created')]
+
     if 'q' in request.args:
         if request.args['q'].strip().lower() == 'htcpcp':
             abort(418, TEAPOT)
         elif request.args['q'].strip().lower() == 'about:credits':
             return redirect('/humans.txt')
-        iq = ItemQuery.search(request.args['q'].strip().lower())
+        iq = ItemQuery.search(request.args['q'].strip().lower(), current_ordering)
     else:
-        iq = ItemQuery.query(None, request.args.get('c'))
+        iq = ItemQuery.query(None, current_ordering, request.args.get('c'))
 
     try:
         items, cursor, more = iq.fetch(10)
@@ -135,7 +138,8 @@ def item_index():
         flash(_T('Sorry, but your query failed.'), 'error')
         return redirect(url_for('index'))
 
-    return render_template('item/index.html', items=items, cursor=cursor, has_more=more)
+    return render_template('item/index.html', items=items, cursor=cursor, has_more=more,
+                           item_orderings=orderings.keys())
 
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):

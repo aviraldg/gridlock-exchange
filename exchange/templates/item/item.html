@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "item/item.fragment.html" %}
-    <h2>{{ _('Feedback') }}</h2>
-    {% import "form_helpers.html" as form_helpers %}
-    {% call form_helpers.render_form(feedback_form, url_for('feedback_add', next=request.url, key=item.key.urlsafe())) %}
-        <input type="submit" class="btn btn-primary" value="{{ _('Add/Update') }}">
-    {% endcall %}
+    {% if current_user.get_id() != item.seller_id %}
+        <h2>{{ _('Feedback') }}</h2>
+        {% import "form_helpers.html" as form_helpers %}
+        {% call form_helpers.render_form(feedback_form, url_for('feedback_add', next=request.url, key=item.key.urlsafe())) %}
+            <input type="submit" class="btn btn-primary" value="{{ _('Add/Update') }}">
+        {% endcall %}
+    {% endif %}
 {% endblock %}

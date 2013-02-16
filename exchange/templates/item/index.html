@@ -1,5 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="#">{{ _('Items') }}</a>
+            <a href="{{ url_for('item_create') }}" class="btn btn-primary">{{ _('Create Item') }}</a>
+            <div class="btn-group pull-right clearfix">
+            <button class="btn dropdown-toggle" data-toggle="dropdown">{{ _('Order by') }}
+                {% if 'o' in request.args %}: {{ request.args['o'] }}{% endif %} <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                {# TODO: prettify #}
+                {% for ordering in item_orderings %}
+                    {% if 'q' in request.args %}
+                        <li><a href="{{ url_for('item_index', q=request.args['q'], o=ordering) }}">{{ ordering }}</a>
+                    {% else %}
+                        <li><a href="{{ url_for('item_index', o=ordering) }}">{{ ordering }}</a>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        </div>
+    </div>
+
     {% for item in items %}
         {% include "item/item.fragment.html" %}
     {% else %}

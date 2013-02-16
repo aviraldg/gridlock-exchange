@@ -27,3 +27,21 @@
         </div>
     </form>
 {% endmacro %}
+
+{% macro render_stars(number, max) %}
+        {% if number < 0 %}
+        <span title="(no ratings)" class="ratings">
+            {% for i in range(max) %}
+                <i class="icon-star-empty off"></i>
+            {% endfor %}
+        {% else %}
+        <span title="(rating {{ number }} out of {{ max }})" class="ratings">
+            {% for i in range(number) %}
+                <i class="icon-star on"></i>
+            {% endfor %}
+            {% for i in range(max-number) %}
+                <i class="icon-star off"></i>
+            {% endfor %}
+        {% endif %}
+    </span>
+{% endmacro %}

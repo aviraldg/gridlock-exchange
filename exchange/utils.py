@@ -28,18 +28,19 @@ class ItemQuery:
 
     FETCH_BATCH_SIZE = 20
 
-    def __init__(self, query, type, cursor_string):
+    def __init__(self, query, ordering, type, cursor_string):
         self.query = query
+        self.ordering = ordering
         self.type = type
         self.cursor_string = cursor_string
 
     @staticmethod
-    def search(query, cursor_string=None):
-        return ItemQuery(query, 'search', cursor_string)
+    def search(query, ordering=[], cursor_string=None):
+        return ItemQuery(query, ordering, 'search', cursor_string)
 
     @staticmethod
-    def query(query=None, cursor_string=None):
-        return ItemQuery(query, 'query', cursor_string)
+    def query(query=None, ordering=[], cursor_string=None):
+        return ItemQuery(query, ordering, 'query', cursor_string)
 
 
     def fetch(self, count=10):
@@ -77,6 +78,7 @@ class ItemQuery:
             items = []
             results = Item.query(*(self.query if self.query else []),
                                  default_options=ndb.QueryOptions(start_cursor=Cursor(urlsafe=self.cursor_string)))
+            results = results.order(self.ordering)
             r_iter = results.iter(produce_cursors=True)
             cursor_string = None
             for item in r_iter:
