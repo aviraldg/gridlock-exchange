@@ -24,16 +24,12 @@ loadSearchTimeout = null
 prevQuery = ''
 
 loadSearch = (query) ->
-  if loadSearchTimeout
-    clearTimeout loadSearchTimeout
-
   unless query is prevQuery or not query.trim()
-    loadSearchTimeout = setTimeout ->
-      if query
-        url = '/item?q='+encodeURIComponent(query)
-      else
-        url = '/item'
+    if loadSearchTimeout?
+      clearTimeout loadSearchTimeout
 
+    loadSearchTimeout = setTimeout ->
+      url = '/item/?q='+encodeURIComponent(query)
       loadPage url
       history.replaceState {'url': url}, '', url
     , 1000
