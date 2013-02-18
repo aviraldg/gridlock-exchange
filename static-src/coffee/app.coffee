@@ -15,8 +15,7 @@ loadPage = (url) ->
             # in that case, we ought to set the location manually
             document.location = url
           else
-            elem = this
-            $(elem).fadeIn()
+            $(@).fadeIn()
 
 
 
@@ -41,8 +40,8 @@ $ ->
   # OPA emulation (makes app appear snappier)
   if history.pushState
     $('body').on 'click', 'a:not([no-jqload])', (e) ->
-      history.pushState {'url': this.href}, '', this.href
-      loadPage(this.href)
+      history.pushState {'url': @href}, '', @href
+      loadPage(@href)
       e.preventDefault()
 
     originalURL = null
@@ -60,5 +59,5 @@ $ ->
 
     # Load search results in background as user types
     $('.search-query').on 'keyup', ->
-      loadSearch this.value
+      loadSearch @value
 
