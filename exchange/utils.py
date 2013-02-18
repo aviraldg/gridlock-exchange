@@ -109,6 +109,7 @@ def secure_compare(s1, s2):
 punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 def slugify(text, delim=u'-'):
+    text = unicode(text)
     result = []
     for word in punct_re.split(text.lower()):
         word = normalize('NFKD', word).encode('ascii', 'ignore')
