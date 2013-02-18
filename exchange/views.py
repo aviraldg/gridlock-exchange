@@ -149,7 +149,8 @@ def item_index():
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):
     item = Item.get_or_404(id, slug)
-    feedback_form = forms.FeedbackForm()
+    feedback = Feedback.get_or_create(item.key, current_user.key)
+    feedback_form = forms.FeedbackForm(rating=feedback.rating, feedback=feedback.feedback)
     return render_template('item/item.html', item=item, feedback_form=feedback_form)
 
 @app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
@@ -309,6 +310,8 @@ def feedback_add(key):
         Feedback.add_or_update(k, current_user.key, form.rating.data, form.feedback.data)
         flash(_LT('Your feedback has been submitted. Thanks!'), 'success')
         return redirect(request.args.get('next', url_for('item_index')))
+
+    return redirect(url_for('item', id=k.id(), slug=k.get().slug))
 
 @app.route('/collection/')
 def collection_index():
