@@ -16,6 +16,7 @@ loadPage = (url) ->
             document.location = url
           else
             $(@).fadeIn()
+            $('select').chosen() # Initialize Chosen (for better select widgets)
 
 
 
