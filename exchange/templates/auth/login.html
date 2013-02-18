@@ -1,24 +1,9 @@
+{% import "form_helpers.html" as form_helpers %}
 {% extends "base.html" %}
 {% block content %}
-<form method="post" action="{{ url_for('login') }}">
-    {{ form.csrf_token }}
-    <table>
-        <tr>
-            <td>{{ form.username.label }}</td>
-            <td>{{ form.username }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.password.label }}</td>
-            <td>{{ form.password }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.remember.label }}</td>
-            <td>{{ form.remember }}</td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td><input class="btn" type="submit" value="{{ _('Login') }}"></td>
-        </tr>
-    </table>
-</form>
+    <h1>{{ _('Login') }}</h1>
+    {% call form_helpers.render_form(form, url_for('login')) %}
+        <input class="btn btn-primary" type="submit" value="{{ _('Login') }}">
+        <a class="btn btn-success" href="{{ url_for('register') }}">Register</a>
+    {% endcall %}
 {% endblock %}

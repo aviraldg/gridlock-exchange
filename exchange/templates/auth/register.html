@@ -1,21 +1,9 @@
+{% import "form_helpers.html" as form_helpers %}
 {% extends "base.html" %}
 {% block content %}
-    <form method=post action="{{ url_for('register') }}">
-        <table>
-            {% for field in form %}
-                {% if field.type == "CSRFTokenField" or field.type == "HiddenField" %}
-                    {{ field }}
-                {% else %}
-                    <tr>
-                        <td>{{ field.label }}</td>
-                        <td>{{ field }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="submit" value="Register"></td>
-            </tr>
-        </table>
-    </form>
+    <h1>{{ _('Register') }}</h1>
+    {% call form_helpers.render_form(form, url_for('register')) %}
+        <input class="btn btn-primary" type="submit" value="{{ _('Register') }}">
+        <a class="btn" href="javascript:history.back();">Cancel</a>
+    {% endcall %}
 {% endblock %}

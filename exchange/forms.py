@@ -23,13 +23,13 @@ class RegisterForm(Form):
         from models import User
         u = User.query(User.username == field.data).get()
         if u:
-            raise ValidationError(_LT('Sorry, but that username is already in use.'))
+            raise ValidationError(_LT('Sorry, but this username is already in use.'))
 
     def validate_email(self, field):
         from models import User
         u = User.query(User.email == field.data).get()
         if u:
-            raise ValidationError(_LT('Sorry, but that email is already in use'))
+            raise ValidationError(_LT('Sorry, but this email is already in use'))
 
 
 class LoginForm(Form):
