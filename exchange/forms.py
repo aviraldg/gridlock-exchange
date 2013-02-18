@@ -4,7 +4,7 @@ from flask.ext.wtf import html5, file
 from flask.ext.login import current_user
 from wtforms import ValidationError
 from wtforms.fields.core import SelectField
-from wtforms.validators import number_range
+from wtforms.validators import number_range, required, equal_to
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 __author__ = 'aviraldg'
@@ -13,7 +13,23 @@ class RegisterForm(Form):
     username = TextField(_LT('Username'), validators=[required()])
     name = TextField(_LT('Name'), validators=[required()])
     email = html5.EmailField(_LT('Email'), validators=(email(), required()))
-    password = PasswordField(_LT('Password'), validators=[length(min=10)])
+    password = PasswordField(_LT('Password'), validators=[required(), length(min=10)])
+    confirm = PasswordField(_LT('Confirm Password'), validators=[
+        required(),
+        equal_to('password', _LT('Passwords must match!'))
+    ])
+
+    def validate_username(self, field):
+        from models import User
+        u = User.query(User.username == field.data).get()
+        if u:
+            raise ValidationError(_LT('Sorry, but that username is already in use.'))
+
+    def validate_email(self, field):
+        from models import User
+        u = User.query(User.email == field.data).get()
+        if u:
+            raise ValidationError(_LT('Sorry, but that email is already in use'))
 
 
 class LoginForm(Form):

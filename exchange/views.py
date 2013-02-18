@@ -3,6 +3,7 @@ __author__ = 'aviraldg'
 from flask import request, render_template, flash, redirect, url_for, abort, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from google.appengine.api import search
+from google.appengine.api.mail import InboundEmailMessage
 import datetime
 from . import app
 from .models import User, Item, Price, Conversation, Message, Feedback, FeedbackAggregate, Collection
@@ -13,6 +14,7 @@ from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 from exchange.forms import ItemForm
 from wtforms import ValidationError
 from google.appengine.ext import blobstore, ndb
+import notify
 
 
 @app.route('/')
@@ -368,3 +370,9 @@ def blob(key):
     resp.mimetype = bi.content_type
     resp.headers['X-AppEngine-BlobKey'] = key
     return resp
+
+@app.route('/_ah/mail/<string:address>', methods=['POST'])
+def mail(address):
+    message = InboundEmailMessage(request.data)
+    return '' if notify.handle_inbound_email(address, message) else abort(500)
+

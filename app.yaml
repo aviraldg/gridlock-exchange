@@ -20,6 +20,10 @@ handlers:
 - url: /static
   static_dir: static
 
+- url: /_ah/mail/.+
+  script: exchange.app
+  login: admin
+
 - url: .*
   script: exchange.app
   secure: always
@@ -33,3 +37,6 @@ libraries:
 
 - name: pycrypto
   version: "2.6"
+
+inbound_services:
+- mail
