@@ -272,11 +272,26 @@ def message_index():
 @app.route('/message/send', methods=['GET', 'POST'])
 @login_required
 def message_send():
-    form = forms.MessageSendForm()
+    form = forms.MessageSendForm(to=request.args.get('to', ''),
+                                 subject=request.args.get('subject', ''))
 
     if form.validate_on_submit():
         to = User.query(User.username.IN(map(lambda un: un.strip(), form.to.data.split(',')))).fetch(1000)
-        message_key, conv_key = Message.send(current_user, to, '', form.message.data)
+
+        if form.subject.data:
+            item = None
+            try:
+                item = Item.get_by_id(long(form.subject.data))
+            except ValueError: pass
+            if not item:
+                flash(_LT('Subject must be a valid item ID.'), 'error')
+                return redirect(url_for('message_send'))
+
+            if item.seller_id != to[0].get_id() or len(to) > 1:
+                flash(_LT('Messages about items can only be sent to their sellers!'), 'error')
+                return redirect(item.url())
+
+        message_key, conv_key = Message.send(current_user, to, form.subject.data, form.message.data)
         return redirect(url_for('message_conversation', id=conv_key.id()) + '#message_%s' % message_key.id())
 
     return render_template('message/send.html', message_send_form=form)
@@ -286,7 +301,8 @@ def message_send():
 @login_required
 def message_conversation(id):
     c = Conversation.get_by_id(id)
-    form = forms.MessageSendForm(to=', '.join([p.username for p in c.participants]))
+    form = forms.MessageSendForm(to=', '.join([p.username for p in c.participants if p != current_user]),
+                                 subject=c.subject)
 
     if not c:
         abort(404)

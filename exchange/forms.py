@@ -4,6 +4,7 @@ from flask.ext.wtf import html5, file
 from flask.ext.login import current_user
 from wtforms import ValidationError
 from wtforms.fields.core import SelectField
+from wtforms.fields.simple import HiddenField
 from wtforms.validators import number_range, required, equal_to
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
@@ -71,7 +72,8 @@ class UserDeleteForm(Form):
             raise ValidationError(_LT('The username entered must match your username exactly.'))
 
 class MessageSendForm(Form):
-    to = TextField(_LT('To'), validators=[required()])
+    subject = HiddenField(_LT('Subject'), default='')
+    to = TextField(_LT('To'), validators=[required()], description=(_LT('(comma separated usernames)')))
     message = TextField(_LT('Message'))
 
 class FeedbackForm(Form):

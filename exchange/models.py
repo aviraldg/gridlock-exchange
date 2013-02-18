@@ -181,6 +181,9 @@ class Item(ndb.Model):
     title = ndb.StringProperty(required=True)
     slug = ndb.StringProperty(required=True, indexed=True)
     seller_id = ndb.StringProperty(required=True)
+    @property
+    def seller(self):
+        return User.get_by_id(long(self.seller_id))
     description = ndb.StringProperty(default=u'')
     description_rendered = ndb.ComputedProperty(lambda self: markdown(self.description, output_format='html5',
                                                                       safe_mode='escape'))
@@ -301,7 +304,7 @@ class Conversation(ndb.Model):
             self.readable_subject = 'With %s' % ', '.join(map(lambda u: u.username,
                                                               ndb.get_multi(self.participant_keys)))
             if self.subject != '':
-                self.readable_subject += ' about %s' % str(Item.get_by_id(self.subject))
+                self.readable_subject += ' about %s' % str(Item.get_by_id(long(self.subject)).title)
             else:
                 self.readable_subject += ' (direct message)'
 

@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="{{ url_for('message_index') }}">{{ _('Messages') }}</a>
+            <a href="{{ url_for('message_send') }}" class="btn btn-primary">{{ _('Send Message') }}</a>
+        </div>
+    </div>
     {% if conversations %}
         <ul class="nav nav-tabs nav-stacked">
         {% for conversation in conversations %}

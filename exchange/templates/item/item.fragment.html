@@ -29,6 +29,9 @@
                 <input type="submit" class="btn btn-danger" value="{{ _('Delete') }}">
             </form>
         {% endif %}
+        {% if current_user.get_id() != item.seller_id %}
+            <a href="{{ url_for('message_send', to=item.seller, subject=item.key.id()) }}" class="btn btn-inverse">{{ _('Contact Seller') }}</a>
+        {% endif %}
         <div class="pull-right">
             <div class="g-plus" data-action="share" data-annotation="none" data-height="28" data-href="{{ item.url() }}"></div>
         </div>
