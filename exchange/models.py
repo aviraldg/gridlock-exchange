@@ -331,13 +331,13 @@ class Item(ndb.Model):
     def url(self):
         return url_for('item', id=self.key.id(), slug=self.slug)
 
-    def editable_by(self, user):
-        return user.get_id() == unicode(self.seller_id) or user.has_role('admin')
+    def editable_by(self, user_profile):
+        return user_profile.get_id() == unicode(self.seller_id) or user_profile.has_role('admin')
 
-    def viewable_by(self, user):
+    def viewable_by(self, user_profile):
         return (self.active and (len(self.private_viewer_keys) == 0 or
-                                 user.key in self.private_viewer_keys)) or \
-               self.seller_id == user.get_id() or user.has_role('admin')
+                                 getattr(user_profile, 'key', None) in self.private_viewer_keys)) or \
+               self.seller_id == user_profile.get_id() or user_profile.has_role('admin')
 
     def _to_document(self, id=None):
         """
