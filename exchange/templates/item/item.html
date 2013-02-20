@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "item/item.fragment.html" %}
-    {% if current_user.get_id() != item.seller_id %}
+    {% if current_user.get_id() != item.seller_id and current_user.is_authenticated() %}
         <h2>{{ _('Feedback') }}</h2>
         {% import "form_helpers.html" as form_helpers %}
         {% call form_helpers.render_form(feedback_form, url_for('feedback_add', next=request.url, key=item.key.urlsafe())) %}

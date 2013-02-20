@@ -165,8 +165,11 @@ def item_index():
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):
     item = Item.get_or_404(id, slug)
-    feedback = Feedback.get_or_create(item.key, current_user.key)
-    feedback_form = forms.FeedbackForm(rating=feedback.rating, feedback=feedback.feedback)
+    if current_user.is_authenticated():
+        feedback = Feedback.get_or_create(item.key, current_user.key)
+        feedback_form = forms.FeedbackForm(rating=feedback.rating, feedback=feedback.feedback)
+    else:
+        feedback_form = None
     return render_template('item/item.html', item=item, feedback_form=feedback_form)
 
 @app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
