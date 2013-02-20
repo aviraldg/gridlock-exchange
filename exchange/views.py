@@ -72,6 +72,7 @@ def login():
             flash(_T('You\'ve successfully been logged in!'), 'success')
         else:
             flash(_T('You cannot login using this account as it has been deactivated.'), 'warning')
+            return redirect(users.create_logout_url(url_for('index')))
 
         return redirect(url_for('index'))
     else:
@@ -123,6 +124,7 @@ def item_create():
             item.image = blob.key()
         item.youtube = form.youtube.data
         item.active = form.active.data
+        item.expiry = datetime.datetime.now() + datetime.timedelta(days=form.expires_in.data)
         private_viewer_emails = [_.strip() for _ in form.private_viewers.data.split(',')]
         item.private_viewer_keys = [user.key for user in UserProfile.query(UserProfile.email.IN(private_viewer_emails))]
         k = item.put()
@@ -186,6 +188,7 @@ def item_update(id, slug):
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
         item.active = form.active.data
+        item.expiry = datetime.datetime.now() + datetime.timedelta(days=form.expires_in.data)
         private_viewer_emails = [_.strip() for _ in form.private_viewers.data.split(',')]
         item.private_viewer_keys = [user.key for user in UserProfile.query(UserProfile.email.IN(private_viewer_emails))]
         if form.image.has_file():

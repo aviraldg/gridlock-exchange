@@ -6,6 +6,7 @@ __author__ = 'aviraldg'
 from google.appengine.ext import ndb
 from google.appengine.api import search, users
 from pbkdf2 import crypt
+import datetime
 from flask import config, url_for, abort
 from babel.numbers import format_currency
 from flask.ext.login import AnonymousUser
@@ -162,7 +163,7 @@ class UserProfile(ndb.Model):
         """
         user_profile = cls.get_by_id(user.user_id())
         if not user_profile:
-            user_profile =  UserProfile(id=user.user_id(), email=user.email(), name=user.nickname())
+            user_profile = UserProfile(id=user.user_id(), email=user.email(), name=user.nickname())
             user_profile.put()
         return user_profile
 
@@ -199,6 +200,7 @@ class UserProfile(ndb.Model):
         :return: whether this UserProfile is editable by user_profile
         """
         return user_profile == self or user_profile.has_role('admin')
+
 
 class CustomAnonymousUserProfile(AnonymousUser):
     def has_role(self, role):
@@ -241,6 +243,7 @@ class Price(ndb.Model):
         # TODO: Don't hardcode the locale
         return format_currency(self.value, self.currency, locale='en_US')
 
+
 def _youtube_render(link):
     url = 'http://www.youtube.com/oembed?url={url}&format=json'.format(url=urllib.quote_plus(link))
     try:
@@ -249,15 +252,18 @@ def _youtube_render(link):
     except:
         return ''
 
+
 class Item(ndb.Model):
     index = search.Index(name='Item')
 
     title = ndb.StringProperty(required=True)
     slug = ndb.StringProperty(required=True, indexed=True)
     seller_id = ndb.StringProperty(required=True)
+
     @property
     def seller(self):
         return UserProfile.get_by_id(self.seller_id)
+
     description = ndb.StringProperty(default=u'')
     description_rendered = ndb.ComputedProperty(lambda self: markdown(self.description, output_format='html5',
                                                                       safe_mode='escape'))
@@ -334,10 +340,15 @@ class Item(ndb.Model):
     def editable_by(self, user_profile):
         return user_profile.get_id() == unicode(self.seller_id) or user_profile.has_role('admin')
 
+    def has_expired(self):
+        return datetime.datetime.now() > self.expiry if self.expiry else False
+
     def viewable_by(self, user_profile):
-        return (self.active and (len(self.private_viewer_keys) == 0 or
-                                 getattr(user_profile, 'key', None) in self.private_viewer_keys)) or \
-               self.seller_id == user_profile.get_id() or user_profile.has_role('admin')
+
+        return ((not self.has_expired()) and self.active and ((len(self.private_viewer_keys) == 0) or
+                                                              (getattr(user_profile, 'key', None)
+                                                               in self.private_viewer_keys))) or \
+               (self.seller_id == user_profile.get_id()) or user_profile.has_role('admin')
 
     def _to_document(self, id=None):
         """
@@ -361,10 +372,13 @@ class Conversation(ndb.Model):
     """
 
     # The validator is used to make this behave like a Set
-    participant_keys = ndb.KeyProperty(repeated=True, kind=UserProfile)#, validator=lambda prop, value: sorted(set(value)))
+    participant_keys = ndb.KeyProperty(repeated=True,
+                                       kind=UserProfile)#, validator=lambda prop, value: sorted(set(value)))
+
     @property
     def participants(self):
         return ndb.get_multi(self.participant_keys)
+
     # Since we can't do exact queries on repeated properties, this sounds like a good workaround.
     phash = ndb.ComputedProperty(lambda self: Conversation._gen_phash(self.participant_keys))
     # This can either be the ID of an Item (if the conversation is about an item) or empty (if it's a direct message)
@@ -495,6 +509,7 @@ class Feedback(ndb.Model):
         if f == None:
             f = Feedback(id=target.urlsafe() + author.urlsafe(), target=target, author=author)
         return f
+
 
 class Collection(ndb.Model):
     author_key = ndb.KeyProperty(kind=UserProfile)

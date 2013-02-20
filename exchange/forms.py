@@ -56,6 +56,9 @@ class ItemForm(Form):
     youtube = TextField(_LT('Youtube Video URL'))
     private_viewers = TextField(_LT('Private Viewers'), description='(comma separated emails)')
     active = BooleanField(_LT('Active'), default=True)
+    expires_in = html5.IntegerField(_LT('Expires In'), validators=[required(),
+                                                                   number_range(min=1)],
+                                    default=1, description=_LT('day(s)'))
 
 
 class ItemDeleteForm(Form):
