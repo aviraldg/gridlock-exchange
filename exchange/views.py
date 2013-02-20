@@ -278,7 +278,7 @@ def user_delete(id):
 
     return render_template('user/delete.html', user_profile=user_profile, user_delete_form=form)
 
-@app.route('/message')
+@app.route('/message/')
 @login_required
 def message_index():
     c_page = Conversation.list_query(current_user).fetch_page(10)
