@@ -1,6 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-    {% for user_profile in user_profiles %}
-        {% include "user/user.fragment.html" %}
-    {% endfor %}
+    <div class="alert alert-info fade in">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Note:</strong> This is an admin-only page and any actions you perform here use your administrator privilages.
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <td>User</td>
+                <td>Actions</td>
+            </tr>
+        </thead>
+        {% for user_profile in user_profiles %}
+            {# {% include "user/user.fragment.html" %} #}
+            <tr {% if not user_profile.active %}class="warning"{% endif %}>
+                <td><a href="{{ user_profile.url() }}">{{ user_profile.display_name }}</a></td>
+                {% if user_profile.editable_by(current_user) %}
+                    <td>
+                        <form method="POST" action="{{ url_for('user_deactivate', id=user_profile.get_id()) }}"
+                              style="display: inline">
+                            {{ user_deactivate_form.csrf_token }}
+                            {% if user_profile.active %}
+                                <input type="submit" class="btn btn-warning" value="{{ _('Deactivate') }}">
+                            {% else %}
+                                <input type="submit" class="btn btn-success" value="{{ _('Activate') }}">
+                            {% endif %}
+                        </form>
+                        <a class="btn btn-danger" href="{{ url_for('user_delete', id=user_profile.get_id()) }}">{{ _('Delete') }}</a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
