@@ -14,4 +14,4 @@ def inject_globals():
 
 @babel.localeselector
 def get_locale():
-    return 'bn'
+    return 'en'

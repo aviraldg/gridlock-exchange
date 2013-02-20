@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "user/user.fragment.html" %}
-    {% if current_user.username == user.username %}
+    {% if current_user == user_profile %}
         <a href="{{ url_for('data_liberation') }}" class="btn btn-inverse" no-jqload>Export Data</a>
     {% endif %}
 {% endblock %}

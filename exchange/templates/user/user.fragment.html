@@ -1,18 +1,18 @@
-<h1><a href="{{ user.url() }}">{{ user.username }}</a></h1>
+<h1><a href="{{ user_profile.url() }}">{{ user_profile.display_name }}</a></h1>
 <div>
-    {% if not user.is_student() %}
+    {% if user_profile.is_student() %}
     <span class="badge badge-inverse" itemprop="price">{{ _('Verified Student') }}</span>
     {% endif %}
 </div>
-{% if user.editable_by(current_user) %}
-    <form method="POST" action="{{ url_for('user_deactivate', id=user.get_id(), username=user.username) }}"
+{% if user_profile.editable_by(current_user) %}
+    <form method="POST" action="{{ url_for('user_deactivate', id=user_profile.get_id()) }}"
             style="display: inline">
         {{ user_deactivate_form.csrf_token }}
-        {% if user.active %}
+        {% if user_profile.active %}
             <input type="submit" class="btn btn-warning" value="{{ _('Deactivate') }}">
         {% else %}
             <input type="submit" class="btn btn-success" value="{{ _('Activate') }}">
         {% endif %}
     </form>
-    <a class="btn btn-danger" href="{{ url_for('user_delete', id=user.get_id(), username=user.username) }}">{{ _('Delete') }}</a>
+    <a class="btn btn-danger" href="{{ url_for('user_delete', id=user_profile.get_id()) }}">{{ _('Delete') }}</a>
 {% endif %}

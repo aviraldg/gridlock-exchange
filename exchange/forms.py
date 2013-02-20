@@ -54,7 +54,7 @@ class ItemForm(Form):
                                                     number_range(min=1)])
     image = file.FileField(_LT('Image'))
     youtube = TextField(_LT('Youtube Video URL'))
-    private_viewers = TextField(_LT('Private Viewers'), description='(comma separated usernames)')
+    private_viewers = TextField(_LT('Private Viewers'), description='(comma separated emails)')
     active = BooleanField(_LT('Active'), default=True)
 
 
@@ -73,7 +73,7 @@ class UserDeleteForm(Form):
 
 class MessageSendForm(Form):
     subject = HiddenField(_LT('Subject'), default='')
-    to = TextField(_LT('To'), validators=[required()], description=(_LT('(comma separated usernames)')))
+    to = TextField(_LT('To'), validators=[required()], description=(_LT('(comma separated emails)')))
     message = TextField(_LT('Message'))
 
 class FeedbackForm(Form):

@@ -1,7 +1,7 @@
 __author__ = 'aviraldg'
 
 from google.appengine.ext.ndb import put_multi_async, put_multi, Key
-from .models import User, Item, Price
+from .models import UserProfile, Item, Price
 from .utils import slugify
 
 def do_bootstrap(item_count=250, user_count=25):
@@ -10,7 +10,7 @@ def do_bootstrap(item_count=250, user_count=25):
 
 def _gen_users(user_count):
     for i in xrange(user_count):
-        user = User()
+        user = UserProfile()
         user.name = 'Test User %s' % i
         user.username = 'testuser%s' % i
         user.email = user.username + '@test.com'

@@ -33,12 +33,12 @@
                 {% endif %}
                 <p class="navbar-text pull-right">
                     {% if current_user.is_authenticated() %}
-                    Logged in as <a href="{{ current_user.url() }}" class="navbar-link">{{ current_user.username }}</a>
+                    Logged in as <a href="{{ current_user.url() }}" class="navbar-link">{{ current_user.display_name }}</a>
                     {% endif %}
                 </p>
                {% if not current_user.is_authenticated() %}
                 <ul class="nav pull-right">
-                    <li><a href="{{ url_for('login') }}">{{ _('Login') }}</a></li>
+                    <li><a href="{{ url_for('login') }}" no-jqload>{{ _('Login') }}</a></li>
                 </ul>
                 {% endif %}
             </div>

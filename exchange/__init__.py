@@ -11,8 +11,8 @@ login_manager.init_app(app)
 babel = Babel()
 babel.init_app(app)
 
-from .models import CustomAnonymousUser
-login_manager.anonymous_user = CustomAnonymousUser
+from .models import CustomAnonymousUserProfile
+login_manager.anonymous_user = CustomAnonymousUserProfile
 
 import contextproc
 import views

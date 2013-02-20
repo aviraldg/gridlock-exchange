@@ -4,7 +4,7 @@ from __future__ import division
 __author__ = 'aviraldg'
 
 from google.appengine.ext import ndb
-from google.appengine.api import search
+from google.appengine.api import search, users
 from pbkdf2 import crypt
 from flask import config, url_for, abort
 from babel.numbers import format_currency
@@ -17,62 +17,130 @@ import notify
 import json
 import urllib
 
+# No longer used with Google's Users Service
+# class User(ndb.Model):
+#     CRYPTO_ITER = 10000
+#
+#     username = ndb.StringProperty(indexed=True)
+#     password = ndb.StringProperty()
+#     name = ndb.StringProperty()
+#     email = ndb.StringProperty()
+#     active = ndb.BooleanProperty(default=True)
+#     profile = ndb.StructuredProperty(UserProfile)
+#     roles = ndb.StringProperty(repeated=True)
+#
+#     @staticmethod
+#     def authenticate(username, password):
+#         """
+#         Tries to authenticate with the given username and password and returns
+#         a User instance if successful, None otherwise.
+#         """
+#
+#         user = User.query(User.username == username).get()
+#         if not user:
+#             return None
+#
+#         if user.check_password(password):
+#             return user
+#         else:
+#             return None
+#
+#     @staticmethod
+#     def get_or_404(id, username):
+#         """
+#         Get the User if it exists, otherwise abort with a 404
+#         :param id:
+#         :param username:
+#         :return: the user object
+#         """
+#
+#         user = User.get_by_id(id)
+#
+#         if not user or user.username != username:
+#             abort(404)
+#
+#         return user
+#
+#     def __str__(self):
+#         return self.username
+#
+#     def __repr__(self):
+#         return 'User: %s' % str(self)
+#
+#     def is_authenticated(self):
+#         return True
+#
+#     def is_active(self):
+#         return self.active
+#
+#     def is_anonymous(self):
+#         return False
+#
+#     def is_student(self):
+#         return self.email.endswith('.edu')
+#
+#     def get_id(self):
+#         return unicode(self.key.id())
+#
+#     def set_password(self, raw_password):
+#         """
+#         Hash, salt and save raw_password for the user using PBKDF2.
+#         """
+#
+#         salt = crypt(app.config['SECRET_KEY'], iterations=self.CRYPTO_ITER)
+#         self.password = crypt(raw_password, salt, self.CRYPTO_ITER)
+#
+#     def check_password(self, raw_password):
+#         """
+#         Check if raw_password matches the user's current password.
+#         """
+#         from .utils import secure_compare
+#
+#         algo, iterations, salt = self.password.split('$')[1:4]
+#         # the number of iterations is stored in base16
+#         iterations = int(iterations, 16)
+#
+#         if algo != 'p5k2':
+#             raise ValueError('check_password can\'t handle %s' % algo)
+#
+#         return secure_compare(self.password, crypt(raw_password,
+#                                                    salt, iterations))
+#
+#     def has_role(self, role):
+#         """
+#         Checks if a user has a particular role.
+#         """
+#         return role in self.roles
+#
+#     def editable_by(self, user):
+#         return user.get_id() == self.get_id() or user.has_role('admin')
+#
+#     def url(self):
+#         return url_for('user', id=self.get_id(), username=self.username)
+#
+#     def delete(self):
+#         self.key.delete()
+
 
 class UserProfile(ndb.Model):
-    bio = ndb.StringProperty(default='')
-
-
-class User(ndb.Model):
-    CRYPTO_ITER = 10000
-
-    username = ndb.StringProperty(indexed=True)
-    password = ndb.StringProperty()
     name = ndb.StringProperty()
     email = ndb.StringProperty()
     active = ndb.BooleanProperty(default=True)
-    profile = ndb.StructuredProperty(UserProfile)
-    roles = ndb.StringProperty(repeated=True)
 
-    @staticmethod
-    def authenticate(username, password):
-        """
-        Tries to authenticate with the given username and password and returns
-        a User instance if successful, None otherwise.
-        """
-
-        user = User.query(User.username == username).get()
-        if not user:
-            return None
-
-        if user.check_password(password):
-            return user
-        else:
-            return None
-
-    @staticmethod
-    def get_or_404(id, username):
-        """
-        Get the User if it exists, otherwise abort with a 404
-        :param id:
-        :param username:
-        :return: the user object
-        """
-
-        user = User.get_by_id(id)
-
-        if not user or user.username != username:
-            abort(404)
-
-        return user
+    @property
+    def display_name(self):
+        return self.name or (self.key.id() if self.key else '(not saved)')
 
     def __str__(self):
-        return self.username
+        return self.key.id() if self.key else '(not saved)'
 
     def __repr__(self):
-        return 'User: %s' % str(self)
+        return 'UserProfile: %s' % str(self)
+
+    # Flask-Login methods #
 
     def is_authenticated(self):
-        return True
+        return users.get_current_user().user_id() == self.key.id()
 
     def is_active(self):
         return self.active
@@ -80,53 +148,59 @@ class User(ndb.Model):
     def is_anonymous(self):
         return False
 
-    def is_student(self):
-        return self.email.endswith('.edu')
-
     def get_id(self):
         return unicode(self.key.id())
 
-    def set_password(self, raw_password):
+    # Utility #
+
+    @classmethod
+    def for_user(cls, user):
         """
-        Hash, salt and save raw_password for the user using PBKDF2.
+        Returns a UserProfile object for a GAE User (and creates it if it doesn't exist)
+        :param user: a User object
+        :return: a UserProfile object
         """
+        user_profile = cls.get_by_id(user.user_id())
+        if not user_profile:
+            user_profile =  UserProfile(id=user.user_id(), email=user.email(), name=user.nickname())
+            user_profile.put()
+        return user_profile
 
-        salt = crypt(app.config['SECRET_KEY'], iterations=self.CRYPTO_ITER)
-        self.password = crypt(raw_password, salt, self.CRYPTO_ITER)
+    @classmethod
+    def get_or_404(cls, id):
+        return cls.get_by_id(id) or abort(404)
 
-    def check_password(self, raw_password):
+    def url(self):
         """
-        Check if raw_password matches the user's current password.
+        Returns a URL for this UserProfile.
+        :return:
         """
-        from .utils import secure_compare
+        return url_for('user', id=self.key.id())
 
-        algo, iterations, salt = self.password.split('$')[1:4]
-        # the number of iterations is stored in base16
-        iterations = int(iterations, 16)
+    def is_student(self):
+        return self.email.endswith('.edu')
 
-        if algo != 'p5k2':
-            raise ValueError('check_password can\'t handle %s' % algo)
-
-        return secure_compare(self.password, crypt(raw_password,
-                                                   salt, iterations))
+    # Permissions #
 
     def has_role(self, role):
         """
-        Checks if a user has a particular role.
+        Checks if the user has a particular role.
+        For the Users Service, this only works with role == 'admin'
+
+        :param role: the role to check for
+        :return: whether the current user has the role
         """
-        return role in self.roles
+        return users.is_current_user_admin() if role == 'admin' else False
 
-    def editable_by(self, user):
-        return user.get_id() == self.get_id() or user.has_role('admin')
+    def editable_by(self, user_profile):
+        """
+        Returns whether this UserProfile is editable by user_profile.
+        :param user_profile: a UserProfile object
+        :return: whether this UserProfile is editable by user_profile
+        """
+        return user_profile == self or user_profile.has_role('admin')
 
-    def url(self):
-        return url_for('user', id=self.get_id(), username=self.username)
-
-    def delete(self):
-        self.key.delete()
-
-
-class CustomAnonymousUser(AnonymousUser):
+class CustomAnonymousUserProfile(AnonymousUser):
     def has_role(self, role):
         return False
 
@@ -139,7 +213,7 @@ class CustomAnonymousUser(AnonymousUser):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get_by_id(int(user_id))
+    return UserProfile.get_by_id(user_id)
 
 
 def price_value_validator(property, value):
@@ -183,7 +257,7 @@ class Item(ndb.Model):
     seller_id = ndb.StringProperty(required=True)
     @property
     def seller(self):
-        return User.get_by_id(long(self.seller_id))
+        return UserProfile.get_by_id(self.seller_id)
     description = ndb.StringProperty(default=u'')
     description_rendered = ndb.ComputedProperty(lambda self: markdown(self.description, output_format='html5',
                                                                       safe_mode='escape'))
@@ -194,7 +268,7 @@ class Item(ndb.Model):
     image = ndb.BlobKeyProperty()
     youtube = ndb.StringProperty()
     youtube_rendered = ndb.ComputedProperty(lambda self: _youtube_render(self.youtube) if self.youtube else '')
-    private_viewer_keys = ndb.KeyProperty(User, repeated=True)
+    private_viewer_keys = ndb.KeyProperty(UserProfile, repeated=True)
 
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)
@@ -287,7 +361,7 @@ class Conversation(ndb.Model):
     """
 
     # The validator is used to make this behave like a Set
-    participant_keys = ndb.KeyProperty(repeated=True, kind=User)#, validator=lambda prop, value: sorted(set(value)))
+    participant_keys = ndb.KeyProperty(repeated=True, kind=UserProfile)#, validator=lambda prop, value: sorted(set(value)))
     @property
     def participants(self):
         return ndb.get_multi(self.participant_keys)
@@ -301,7 +375,7 @@ class Conversation(ndb.Model):
 
     def _pre_put_hook(self):
         if self.readable_subject == '':
-            self.readable_subject = 'With %s' % ', '.join(map(lambda u: u.username,
+            self.readable_subject = 'With %s' % ', '.join(map(lambda up: up.display_name,
                                                               ndb.get_multi(self.participant_keys)))
             if self.subject != '':
                 self.readable_subject += ' about %s' % str(Item.get_by_id(long(self.subject)).title)
@@ -336,7 +410,7 @@ class Conversation(ndb.Model):
 
 
 class Message(ndb.Model):
-    author_key = ndb.KeyProperty(kind=User)
+    author_key = ndb.KeyProperty(kind=UserProfile)
 
     @property
     def author(self):
@@ -399,7 +473,7 @@ class FeedbackAggregate(ndb.Model):
 
 class Feedback(ndb.Model):
     target = ndb.KeyProperty()
-    author = ndb.KeyProperty(User)
+    author = ndb.KeyProperty(kind=UserProfile)
     rating = ndb.IntegerProperty(choices=range(1, 6))
     feedback = ndb.StringProperty()
 
@@ -423,7 +497,7 @@ class Feedback(ndb.Model):
         return f
 
 class Collection(ndb.Model):
-    author_key = ndb.KeyProperty(User)
+    author_key = ndb.KeyProperty(kind=UserProfile)
 
     @property
     def author(self):

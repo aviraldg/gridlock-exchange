@@ -2,11 +2,11 @@ __author__ = 'aviraldg'
 
 from flask import request, render_template, flash, redirect, url_for, abort, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from google.appengine.api import search
+from google.appengine.api import search, users
 from google.appengine.api.mail import InboundEmailMessage
 import datetime
 from . import app
-from .models import User, Item, Price, Conversation, Message, Feedback, FeedbackAggregate, Collection
+from .models import UserProfile, Item, Price, Conversation, Message, Feedback, FeedbackAggregate, Collection
 from .utils import slugify, ItemQuery, to_fieldstorage, TEAPOT
 from .decorators import role_required, condition_required
 import forms
@@ -21,44 +21,61 @@ import notify
 def index():
     return redirect(url_for('item_index'))
 
-@app.route('/auth/register', methods=('GET', 'POST'))
-def register():
-    form = forms.RegisterForm()
+# @app.route('/auth/register', methods=('GET', 'POST'))
+# def register():
+#     form = forms.RegisterForm()
+#
+#     if form.validate_on_submit():
+#         user = User()
+#         user.username = form.username.data
+#         user.name = form.name.data
+#         user.email = form.email.data
+#         user.set_password(form.password.data)
+#         user.put()
+#         flash(_T('You\'ve been registered!'))
+#         return redirect(url_for('login'))
+#
+#     return render_template('auth/register.html', form=form)
 
-    if form.validate_on_submit():
-        user = User()
-        user.username = form.username.data
-        user.name = form.name.data
-        user.email = form.email.data
-        user.set_password(form.password.data)
-        user.put()
-        flash(_T('You\'ve been registered!'))
-        return redirect(url_for('login'))
+# No longer used, now that we've switched to Google's User Service.
+#
+# @app.route('/auth/login', methods=('GET', 'POST'))
+# def login():
+#     login_form = forms.LoginForm()
+#
+#     if login_form.validate_on_submit():
+#         user = User.authenticate(login_form.username.data,
+#             login_form.password.data)
+#         if not user:
+#             flash(_T('Incorrect username or password'), 'error')
+#         else:
+#             if not login_user(user, login_form.remember.data):
+#                 flash(_T('You cannot login using this account as it has been deactivated.'), 'warning')
+#             else:
+#                 flash(_T('You\'ve successfully been logged in!'), 'success')
+#             return redirect(request.args.get('next') or url_for('index'))
+#
+#
+#     context = {
+#         'form': login_form
+#     }
+#
+#     return render_template('auth/login.html', **context)
 
-    return render_template('auth/register.html', form=form)
-
-@app.route('/auth/login', methods=('GET', 'POST'))
+# This controller maintains the old "interface" while using Google's Login Service.
+@app.route('/auth/login')
 def login():
-    login_form = forms.LoginForm()
-
-    if login_form.validate_on_submit():
-        user = User.authenticate(login_form.username.data,
-            login_form.password.data)
-        if not user:
-            flash(_T('Incorrect username or password'), 'error')
+    user = users.get_current_user()
+    if user is not None:
+        user_profile = UserProfile.for_user(user)
+        if login_user(user_profile):
+            flash(_T('You\'ve successfully been logged in!'), 'success')
         else:
-            if not login_user(user, login_form.remember.data):
-                flash(_T('You cannot login using this account as it has been deactivated.'), 'warning')
-            else:
-                flash(_T('You\'ve successfully been logged in!'), 'success')
-            return redirect(request.args.get('next') or url_for('index'))
+            flash(_T('You cannot login using this account as it has been deactivated.'), 'warning')
 
-
-    context = {
-        'form': login_form
-    }
-
-    return render_template('auth/login.html', **context)
+        return redirect(url_for('index'))
+    else:
+        return redirect(users.create_login_url(url_for('login')))
 
 @app.route('/auth/logout', methods=['POST'])
 @login_required
@@ -67,13 +84,12 @@ def logout():
     try:
         if form.validate_on_submit():
             logout_user()
+            flash(_T('You have successfully been logged out.'), 'success')
+            return redirect(users.create_logout_url(url_for('index')))
         else:
             abort(403)
     except ValidationError:
         abort(403)
-
-    flash(_T('You have successfully been logged out.'), 'success')
-    return redirect(url_for('login'))
 
 @app.route('/profile')
 @app.route('/profile/<int:profile_id>')
@@ -107,8 +123,8 @@ def item_create():
             item.image = blob.key()
         item.youtube = form.youtube.data
         item.active = form.active.data
-        private_viewer_usernames = [_.strip() for _ in form.private_viewers.data.split(',')]
-        item.private_viewer_keys = [user.key for user in User.query(User.username.IN(private_viewer_usernames))]
+        private_viewer_emails = [_.strip() for _ in form.private_viewers.data.split(',')]
+        item.private_viewer_keys = [user.key for user in UserProfile.query(UserProfile.email.IN(private_viewer_emails))]
         k = item.put()
 
         flash(_T('Your item has been created!'), 'success')
@@ -167,8 +183,8 @@ def item_update(id, slug):
         item.description = form.description.data
         item.price = Price(fixed_value=form.price.data*100, currency='USD')
         item.active = form.active.data
-        private_viewer_usernames = [_.strip() for _ in form.private_viewers.data.split(',')]
-        item.private_viewer_keys = [user.key for user in User.query(User.username.IN(private_viewer_usernames))]
+        private_viewer_emails = [_.strip() for _ in form.private_viewers.data.split(',')]
+        item.private_viewer_keys = [user.key for user in UserProfile.query(UserProfile.email.IN(private_viewer_emails))]
         if form.image.has_file():
             app.logger.debug(form.image.data)
             app.logger.debug(dir(form.image.data))
@@ -210,48 +226,47 @@ def item_delete(id, slug):
 @role_required('admin')
 @login_required
 def user_index():
-    users = User.query().fetch(10)
+    users_profiles = UserProfile.query().fetch(10)
+    return render_template('user/index.html', user_profiles=users_profiles)
 
-    return render_template('user/index.html', users=users)
+@app.route('/user/u/<string:id>/')
+def user(id):
+    user_profile = UserProfile.get_or_404(id)
+    return render_template('user/user.html', user_profile=user_profile)
 
-@app.route('/user/<int:id>/<string:username>/')
-def user(id, username):
-    user_object = User.get_or_404(id, username)
-
-    return render_template('user/user.html', user=user_object)
-
-@app.route('/user/<int:id>/<string:username>/deactivate', methods=['POST'])
-@condition_required(lambda id, username: User.get_or_404(id, username).editable_by(current_user))
-def user_deactivate(id, username):
+@app.route('/user/u/<string:id>/deactivate', methods=['POST'])
+@condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))
+def user_deactivate(id):
     form = forms.UserDeactivateForm()
-    user = User.get_or_404(id, username)
+    user_profile = UserProfile.get_or_404(id)
 
-    if current_user.has_role('admin') and user == current_user:
+    if current_user.has_role('admin') and user_profile == current_user:
         flash(_T('Sorry, but administrators cannot deactivate their own accounts.'), 'error')
         flash(_T('Please ask another administrator to deactivate your account.'), 'info')
-        return redirect(url_for('user', id=id, username=username))
+        return redirect(user_profile.url())
 
     if form.validate_on_submit():
-        user.active = not user.active
-        user.put()
+        user_profile.active = not user_profile.active
+        user_profile.put()
 
         # flipped, because we've just activated/deactivated
-        flash('%s has successfully been %sactivated!' % (username, '' if user.active else 'de'), 'success')
+        flash('%s has successfully been %sactivated!' %
+              (user_profile.display_name, '' if user_profile.active else 'de'), 'success')
 
-        return redirect(url_for('user', id=id, username=username))
+        return redirect(user_profile.url())
     else:
         abort(403)
 
-@app.route('/user/<int:id>/<string:username>/delete', methods=['GET', 'POST'])
-@condition_required(lambda id, username: User.get_or_404(id, username).get_id() == current_user.get_id())
-def user_delete(id, username):
+@app.route('/user/u/<string:id>/delete', methods=['GET', 'POST'])
+@condition_required(lambda id: UserProfile.get_or_404(id) == current_user)
+def user_delete(id):
     form = forms.UserDeleteForm()
-    user = User.get_or_404(id, username)
+    user_profile = UserProfile.get_or_404(id)
 
     if current_user.has_role('admin'):
         flash(_T('Sorry, but administrators cannot delete their accounts.'), 'error')
         flash(_T('Please ask another administrator to deactivate your account, or to make you a regular user.'), 'info')
-        return redirect(url_for('user', id=id, username=username))
+        return redirect(url_for('user', id=id))
 
     if form.validate_on_submit():
         logout_user()
@@ -261,7 +276,7 @@ def user_delete(id, username):
 
         return redirect(url_for('index'))
 
-    return render_template('user/delete.html', user=user, user_delete_form=form)
+    return render_template('user/delete.html', user_profile=user_profile, user_delete_form=form)
 
 @app.route('/message')
 @login_required
@@ -276,7 +291,7 @@ def message_send():
                                  subject=request.args.get('subject', ''))
 
     if form.validate_on_submit():
-        to = User.query(User.username.IN(map(lambda un: un.strip(), form.to.data.split(',')))).fetch(1000)
+        to = UserProfile.query(UserProfile.email.IN(map(lambda un: un.strip(), form.to.data.split(',')))).fetch(1000)
 
         if form.subject.data:
             item = None
@@ -301,7 +316,7 @@ def message_send():
 @login_required
 def message_conversation(id):
     c = Conversation.get_by_id(id)
-    form = forms.MessageSendForm(to=', '.join([p.username for p in c.participants if p != current_user]),
+    form = forms.MessageSendForm(to=', '.join([p.display_name for p in c.participants if p != current_user]),
                                  subject=c.subject)
 
     if not c:
@@ -371,10 +386,10 @@ def data_liberation(filename=None):
     if not filename:
         return redirect(url_for('data_liberation',
                                 filename=datetime.datetime.now().ctime().replace(' ', '-').replace(':', '-') +
-                                         '-%s.zip' % current_user.username))
+                                         '-%s.zip' % current_user.display_name))
     # XXX Do this in a background task, cache, etc.
     from datalib import generate_zip
-    zip = generate_zip(current_user.username)
+    zip = generate_zip(current_user.get_id())
     resp = make_response(zip)
     resp.headers['Content-Type'] = 'application/zip'
     return resp
