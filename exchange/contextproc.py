@@ -31,8 +31,7 @@ def change_lang():
 def bootstrap():
     if not Item.query().get():
         do_bootstrap()
-
-    flash(_T('The app was bootstrapped (first run only); please reload the page.'))
+        flash(_T('The app was bootstrapped (first run only); please reload the page.'))
 
 @app.after_request
 def add_csp(resp):
