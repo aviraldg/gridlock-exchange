@@ -17,6 +17,7 @@ from google.appengine.api import urlfetch
 import notify
 import json
 import urllib
+import logging
 
 # No longer used with Google's Users Service
 # class User(ndb.Model):
@@ -449,6 +450,9 @@ class Message(ndb.Model):
 
         conversation.messages.append(message.key)
         ck = conversation.put()
+
+        logging.info('Sent message from %s to %s (subject: %s)', author_key.get().display_name,
+                     ', '.join([_.display_name for _ in conversation.participants]), conversation.readable_subject)
 
         if do_notify:
             notify.notify(conversation, message, author)

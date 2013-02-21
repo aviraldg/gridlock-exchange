@@ -15,6 +15,7 @@ from exchange.forms import ItemForm
 from wtforms import ValidationError
 from google.appengine.ext import blobstore, ndb
 import notify
+import logging
 
 
 @app.route('/')
@@ -278,6 +279,9 @@ def user_deactivate(id):
         flash('%s has successfully been %sactivated!' %
               (user_profile.display_name, '' if user_profile.active else 'de'), 'success')
 
+    if user_profile != current_user:
+        logging.info('%s\'s account has been deactivated', user_profile.display_name)
+
         return redirect(user_profile.url())
     else:
         abort(403)
@@ -298,6 +302,9 @@ def user_delete(id):
         user.delete()
 
         flash(_T('Your account has successfully been deleted.'))
+
+        if user_profile != current_user:
+            logging.info('%s\'s account has been deleted', user_profile.display_name)
 
         return redirect(url_for('index'))
 

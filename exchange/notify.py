@@ -7,7 +7,8 @@ import re
 def notify(conversation, message, sender):
     to = [p.email for p in conversation.participants if p != sender]
     sender = '%s <conversation-%s@%s.appspotmail.com>' % (sender.name, conversation.key.id(), get_application_id())
-    mail.send_mail(sender=sender, to=to, subject=conversation.readable_subject, body=message.content)
+    if to:
+        mail.send_mail(sender=sender, to=to, subject=conversation.readable_subject, body=message.content)
 
 CONV_ADDRESS_RE = re.compile(r'\<conversation-(.+)@.+\>')
 ADDRESS_RE = re.compile(r'\<(.+)\>')
