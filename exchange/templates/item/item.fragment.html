@@ -19,6 +19,9 @@
         <span class="badge badge-inverse" itemprop="price">{{ item.price }}</span>
     </span>
     {{ form_helpers.render_stars(item.average_rating|default(-1)|int, 5) }}
+    <p>
+        {{ _('Created') }}: <time class="timeago" datetime="{{ item.created.isoformat() }}Z">{{ item.created.ctime() }}</time>
+    </p>
     <p itemprop="description">{{ item.description_rendered|safe }}</p>
     <div class="form-actions">
         <a href="{{ item.url() }}" class="btn">{{ _('Details') }}</a>

@@ -16,6 +16,7 @@ loadPage = (url) ->
             document.location = url
           else
             $(@).fadeIn()
+            $('time.timeago').timeago()
             $('select').chosen() # Initialize Chosen (for better select widgets)
             ga_ids = $('div[gaid]').map(-> $(this).attr('gaid')).get()
             track(ga_ids)
@@ -46,6 +47,7 @@ window.track = (ga_ids) ->
     _gaq.push ['ut._trackPageview']
 
 $ ->
+  $('time.timeago').timeago()
   $('select').chosen() # Initialize Chosen (for better select widgets)
 
   # OPA emulation (makes app appear snappier)
