@@ -137,7 +137,7 @@ class UserProfile(ndb.Model):
         return self.name or (self.key.id() if self.key else '(not saved)')
 
     def __str__(self):
-        return self.key.id() if self.key else '(not saved)'
+        return (self.key.id() if self.key else '(not saved)') or '(not saved)'
 
     def __repr__(self):
         return 'UserProfile: %s' % str(self)

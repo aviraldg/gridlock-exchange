@@ -5,6 +5,8 @@ from flask.ext.login import current_user
 from . import app, babel
 from .forms import LogoutForm, ItemDeleteForm, UserDeactivateForm
 from babel import Locale
+from .models import Item
+from bootstrap import do_bootstrap
 import os
 
 _langs = None
@@ -23,6 +25,12 @@ def list_langs():
 def change_lang():
     lang = request.args.get('lang', None) or session.get('lang', 'en')
     session['lang'] = lang
+
+@app.before_first_request
+def bootstrap():
+    if not Item.query().get():
+        do_bootstrap()
+    return 'The app was bootstrapped (first run only); please reload the page.'
 
 @app.context_processor
 def inject_globals():

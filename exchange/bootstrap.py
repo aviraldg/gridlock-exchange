@@ -10,11 +10,12 @@ def do_bootstrap(item_count=250, user_count=25):
 
 def _gen_users(user_count):
     for i in xrange(user_count):
-        user = UserProfile()
+        # AppEngine behaves in a rather funny way if you try to mix numerical IDs, string IDs, and numerical IDs in
+        # strings
+        user = UserProfile(id='testuser%s' % i)
         user.name = 'Test User %s' % i
         user.username = 'testuser%s' % i
         user.email = user.username + '@test.com'
-        user.set_password('1234567890')
         user.active = True
         yield user
 
