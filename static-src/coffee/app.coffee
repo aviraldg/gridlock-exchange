@@ -19,6 +19,7 @@ loadPage = (url) ->
             $('select').chosen() # Initialize Chosen (for better select widgets)
             ga_ids = $('div[gaid]').map(-> $(this).attr('gaid')).get()
             track(ga_ids)
+            document.title = $('#dlv').attr('title')
 
 loadSearchTimeout = null
 prevQuery = ''

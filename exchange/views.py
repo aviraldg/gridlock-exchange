@@ -133,7 +133,8 @@ def item_create():
         return redirect(url_for('item', id=k.id(), slug=item.slug))
 
     return render_template('item/create.html', form=form,
-                           action=blobstore.create_upload_url(url_for('item_create')))
+                           action=blobstore.create_upload_url(url_for('item_create')),
+                           title=_T('Create Item'))
 
 @app.route('/item/')
 def item_index():
@@ -162,7 +163,8 @@ def item_index():
         return redirect(url_for('index'))
 
     return render_template('item/index.html', items=items, cursor=cursor,
-                           has_more=more, item_orderings=orderings.keys())
+                           has_more=more, item_orderings=orderings.keys(),
+                           title=_T('Items'))
 
 @app.route('/item/<int:id>/<string:slug>')
 def item(id, slug):
@@ -173,7 +175,8 @@ def item(id, slug):
     else:
         feedback_form = None
     return render_template('item/item.html', item=item, feedback_form=feedback_form,
-                           user_track=item.seller.ga_id)
+                           user_track=item.seller.ga_id,
+                           title=item.title)
 
 @app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
 @login_required
@@ -210,7 +213,8 @@ def item_update(id, slug):
                     active=item.active)
 
     return render_template('item/update.html', form=form, id=id, slug=slug,
-                           action=blobstore.create_upload_url(url_for('item_update', id=id, slug=slug)))
+                           action=blobstore.create_upload_url(url_for('item_update', id=id, slug=slug)),
+                           title=_T('Update Item') + ' %s' % item.title)
 
 @app.route('/item/<int:id>/<string:slug>/delete', methods=['POST'])
 @login_required
@@ -234,7 +238,7 @@ def item_delete(id, slug):
 @login_required
 def user_index():
     users_profiles = UserProfile.query().fetch(10)
-    return render_template('user/index.html', user_profiles=users_profiles)
+    return render_template('user/index.html', user_profiles=users_profiles, title=_T('Users'))
 
 @app.route('/user/u/<string:id>/', methods=['GET', 'POST'])
 def user(id):
@@ -252,7 +256,8 @@ def user(id):
     else:
         user_profile_form = None
 
-    return render_template('user/user.html', user_profile=user_profile, user_profile_form=user_profile_form)
+    return render_template('user/user.html', user_profile=user_profile, user_profile_form=user_profile_form,
+                           title=user_profile.display_name)
 
 @app.route('/user/u/<string:id>/deactivate', methods=['POST'])
 @condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))
@@ -296,13 +301,15 @@ def user_delete(id):
 
         return redirect(url_for('index'))
 
-    return render_template('user/delete.html', user_profile=user_profile, user_delete_form=form)
+    return render_template('user/delete.html', user_profile=user_profile, user_delete_form=form,
+                           title=_T('Delete User'))
 
 @app.route('/message/')
 @login_required
 def message_index():
     c_page = Conversation.list_query(current_user).fetch_page(10)
-    return render_template('message/index.html', conversations=c_page[0], cursor=c_page[1], has_more=c_page[2])
+    return render_template('message/index.html', conversations=c_page[0], cursor=c_page[1], has_more=c_page[2],
+                           title=_T('Messages'))
 
 @app.route('/message/send', methods=['GET', 'POST'])
 @login_required
@@ -329,7 +336,8 @@ def message_send():
         message_key, conv_key = Message.send(current_user, to, form.subject.data, form.message.data)
         return redirect(url_for('message_conversation', id=conv_key.id()) + '#message_%s' % message_key.id())
 
-    return render_template('message/send.html', message_send_form=form)
+    return render_template('message/send.html', message_send_form=form,
+                           title=_T('Send Message'))
 
 
 @app.route('/message/conversation/<int:id>')
@@ -348,7 +356,8 @@ def message_conversation(id):
     page = Message.query(Message.to == c.key).fetch_page(10)
 
     return render_template('message/conversation.html', conversation=c, messages=page[0], cursor=page[1],
-                           has_more=page[2], message_send_form=form)
+                           has_more=page[2], message_send_form=form,
+                           title=c.readable_subject)
 
 @app.route('/feedback/<string:key>/add', methods=['POST'])
 @login_required
@@ -368,13 +377,15 @@ def feedback_add(key):
 def collection_index():
     cq = Collection.query(Collection.author_key == current_user.key)
     collections, cursor, has_more = cq.fetch_page(10)
-    return render_template('collection/index.html', collections=collections, cursor=cursor, has_more=has_more)
+    return render_template('collection/index.html', collections=collections, cursor=cursor, has_more=has_more,
+                           title=_T('Collections'))
 
 @app.route('/collection/<int:id>/')
 def collection(id):
-    collection = Collection.get_by_id(id)
-    return render_template('collection/collection.html', collection=collection,
-                           user_track=item.seller.ga_id)
+    c = Collection.get_by_id(id)
+    return render_template('collection/collection.html', collection=c,
+                           user_track=item.seller.ga_id,
+                           title=c.title)
 
 @app.route('/collection/create', methods=['GET', 'POST'])
 def collection_create():
@@ -397,7 +408,8 @@ def collection_create():
         flash(_LT('Your collection has been created successfully!'), 'success')
         return redirect(url_for('collection', id=k.id()))
 
-    return render_template('collection/create.html', collection_form=collection_form)
+    return render_template('collection/create.html', collection_form=collection_form,
+                           title=_T('Create Collection'))
 
 
 @app.route('/user/data-liberation/')

@@ -6,8 +6,8 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>{{ title }}</title>
-        <meta name="description" content="{{ description }}">
+        <title>Gridlock Exchange{% if title %} | {{ title }}{% endif %}</title>
+        <meta name="description" content="{{ title }}">
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="/static/css/lib.min.css">
         <link rel="stylesheet" href="/static/css/app.min.css">
@@ -52,16 +52,15 @@
                     _gaq.push(['_trackPageview']);
                 {% endif %}
                 {% if user_track %}
-                    console.info('ut: {{ user_track }}');
                     _gaq.push(['ut._setAccount','{{ user_track }}']);
                     _gaq.push(['ut._trackPageview']);
                 {% endif %}
-                console.log('Inline script');
             </script>
             {# Hack to allow tracking even on dynamic loads. #}
             {% if user_track %}
                 <div gaid="{{ user_track }}"></div>
             {% endif %}
+            <div id="dlv" title="Gridlock Exchange{% if title %} | {{ title }}{% endif %}"></div>
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
