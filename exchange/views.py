@@ -19,7 +19,7 @@ import notify
 
 @app.route('/')
 def index():
-    return redirect(url_for('item_index'))
+    return redirect(request.args.get('next') or url_for('item_index'))
 
 # @app.route('/auth/register', methods=('GET', 'POST'))
 # def register():
