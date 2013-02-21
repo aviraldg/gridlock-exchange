@@ -263,6 +263,7 @@ def _youtube_render(link):
 
 class Item(ndb.Model):
     index = search.Index(name='Item')
+    index.cursor_type = search.Index.RESULT_CURSOR
 
     title = ndb.StringProperty(required=True)
     slug = ndb.StringProperty(required=True, indexed=True)
@@ -293,6 +294,16 @@ class Item(ndb.Model):
         for prop_name in ('title', 'description', 'created', 'expiry'):
             props[prop_name + ' (ascending)'] = getattr(cls, prop_name)
             props[prop_name + ' (descending)'] = -getattr(cls, prop_name)
+        return props
+
+    @classmethod
+    def get_search_orderings(cls):
+        props = dict()
+        for prop_name in ('title', 'description', 'created', 'expiry'):
+            props[prop_name + ' (ascending)'] = search.SortExpression(expression=prop_name,
+                                                                      direction=search.SortExpression.ASCENDING)
+            props[prop_name + ' (descending)'] = search.SortExpression(expression=prop_name,
+                                                                       direction=search.SortExpression.DESCENDING)
         return props
 
     @property

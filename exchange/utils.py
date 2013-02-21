@@ -52,13 +52,16 @@ class ItemQuery:
 
         if self.type == 'search':
             items = []
-            cursor = search.Cursor(self.cursor_string, per_result=True)
+            cursor = search.Cursor(web_safe_string=self.cursor_string, per_result=True)
 
             while count > 0:
                 results = Item.index.search(search.Query(self.query,
                                                          options=search.QueryOptions(
                                                              limit=ItemQuery.FETCH_BATCH_SIZE,
-                                                             cursor=cursor
+                                                             cursor=cursor,
+                                                             sort_options=search.SortOptions(
+                                                                 [self.ordering], limit=1000
+                                                             )
                                                          )))
                 if len(results.results) == 0:
                     return items, None, False

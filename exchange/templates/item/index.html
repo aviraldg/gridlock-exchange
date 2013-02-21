@@ -39,9 +39,9 @@
             {% if has_more %}
                 <li>
                 {%  if 'q' in request.args %}
-                    <a class="load-more" href="{{ url_for('item_index', q=request.args['q'], c=cursor, o=request.args.get('o', '-created')) }}">{{ _('Next Page') }}</a>
+                    <a class="load-more" href="{{ url_for('item_index', q=request.args['q'], c=cursor, o=request.args.get('o', 'created (descending)')) }}">{{ _('Next Page') }}</a>
                 {% else %}
-                    <a class="load-more" href="{{ url_for('item_index', c=cursor, o=request.args.get('o', '-created')) }}">{{ _('Next Page') }}</a>
+                    <a class="load-more" href="{{ url_for('item_index', c=cursor, o=request.args.get('o', 'created (descending)')) }}">{{ _('Next Page') }}</a>
                 {% endif %}
                 </li>
             {% else %}

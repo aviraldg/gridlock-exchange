@@ -147,15 +147,18 @@ def item_index():
     ordering = request.args.get('o', 'created (descending)')
     if ordering not in orderings.keys():
         ordering = 'created (descending)'
-    current_ordering = orderings.get(ordering)
+
 
     if 'q' in request.args:
+        orderings = Item.get_search_orderings()
+        current_ordering = orderings.get(ordering)
         if request.args['q'].strip().lower() == 'htcpcp':
             abort(418, TEAPOT)
         elif request.args['q'].strip().lower() == 'about:credits':
             return redirect('/humans.txt')
         iq = ItemQuery.search(request.args['q'].strip().lower(), current_ordering)
     else:
+        current_ordering = orderings.get(ordering)
         iq = ItemQuery.query(None, current_ordering, request.args.get('c'))
 
     try:
