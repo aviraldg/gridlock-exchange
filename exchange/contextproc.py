@@ -1,6 +1,6 @@
 __author__ = 'aviraldg'
 
-from flask import session, request
+from flask import session, request, flash
 from flask.ext.login import current_user
 from . import app, babel
 from .forms import LogoutForm, ItemDeleteForm, UserDeactivateForm
@@ -8,6 +8,7 @@ from babel import Locale
 from .models import Item
 from bootstrap import do_bootstrap
 import os
+from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 _langs = None
 
@@ -30,7 +31,8 @@ def change_lang():
 def bootstrap():
     if not Item.query().get():
         do_bootstrap()
-    return 'The app was bootstrapped (first run only); please reload the page.'
+
+    flash(_T('The app was bootstrapped (first run only); please reload the page.'))
 
 @app.context_processor
 def inject_globals():

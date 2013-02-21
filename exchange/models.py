@@ -7,7 +7,7 @@ from google.appengine.ext import ndb
 from google.appengine.api import search, users
 from pbkdf2 import crypt
 import datetime
-from flask import config, url_for, abort
+from flask import config, url_for, abort, flash
 from babel.numbers import format_currency
 from flask.ext.login import AnonymousUser
 from hashlib import sha512
@@ -18,6 +18,7 @@ import notify
 import json
 import urllib
 import logging
+from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 # No longer used with Google's Users Service
 # class User(ndb.Model):
@@ -168,6 +169,9 @@ class UserProfile(ndb.Model):
         user_profile = cls.get_by_id(user.user_id())
         if not user_profile:
             user_profile = UserProfile(id=user.user_id(), email=user.email(), name=user.nickname())
+            # HACK (this shouldn't be done here!)
+            flash(_LT('Hi there! Your user account has just been created, so why not go to your profile (top right) '
+                      'and set things up?'))
             user_profile.put()
         return user_profile
 
