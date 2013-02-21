@@ -129,6 +129,7 @@ class UserProfile(ndb.Model):
     bio = ndb.StringProperty(default='')
     bio_rendered = ndb.ComputedProperty(lambda self: markdown(self.bio, output_format='html5', safe_mode='escape'))
     active = ndb.BooleanProperty(default=True)
+    ga_id = ndb.StringProperty()
 
     @property
     def display_name(self):

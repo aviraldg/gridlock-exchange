@@ -44,20 +44,35 @@
 
             {% block content %}
             {% endblock %}
+            <script type="text/javascript">
+                var _gaq=_gaq||[];
+                {% if config.GA_ID %}
+                    {# Global tracking for our app. #}
+                    _gaq.push(['_setAccount','{{ ga_id }}']);
+                    _gaq.push(['_trackPageview']);
+                {% endif %}
+                {% if user_track %}
+                    console.info('ut: {{ user_track }}');
+                    _gaq.push(['ut._setAccount','{{ user_track }}']);
+                    _gaq.push(['ut._trackPageview']);
+                {% endif %}
+                console.log('Inline script');
+            </script>
+            {# Hack to allow tracking even on dynamic loads. #}
+            {% if user_track %}
+                <div gaid="{{ user_track }}"></div>
+            {% endif %}
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="/static/js/vendor/jquery-1.9.0.min.js"><\/script>')</script>
         <script src="/static/js/app.js"></script>
 
-        {% if config.GA_ID %}
         <script>
-            var _gaq=[['_setAccount','{{ ga_id }}'],['_trackPageview']];
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
             g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
             s.parentNode.insertBefore(g,s)}(document,'script'));
         </script>
-        {% endif %}
         <script type="text/javascript">
         window.___gcfg = {lang: 'en-GB'};
 

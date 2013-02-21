@@ -172,7 +172,8 @@ def item(id, slug):
         feedback_form = forms.FeedbackForm(rating=feedback.rating, feedback=feedback.feedback)
     else:
         feedback_form = None
-    return render_template('item/item.html', item=item, feedback_form=feedback_form)
+    return render_template('item/item.html', item=item, feedback_form=feedback_form,
+                           user_track=item.seller.ga_id)
 
 @app.route('/item/<int:id>/<string:slug>/update', methods=['GET', 'POST'])
 @login_required
@@ -240,10 +241,12 @@ def user(id):
     user_profile = UserProfile.get_or_404(id)
     if user_profile.editable_by(current_user):
         user_profile_form = forms.UserProfileForm(name=user_profile.display_name,
-                                                  bio=user_profile.bio or '')
+                                                  bio=user_profile.bio or '',
+                                                  ga_id=user_profile.ga_id)
         if user_profile_form.validate_on_submit():
             user_profile.name = user_profile_form.name.data
             user_profile.bio = user_profile_form.bio.data
+            user_profile.ga_id = user_profile_form.ga_id.data
             user_profile.put()
             flash(_LT('Your profile has been updated!'), 'success')
     else:
@@ -370,7 +373,8 @@ def collection_index():
 @app.route('/collection/<int:id>/')
 def collection(id):
     collection = Collection.get_by_id(id)
-    return render_template('collection/collection.html', collection=collection)
+    return render_template('collection/collection.html', collection=collection,
+                           user_track=item.seller.ga_id)
 
 @app.route('/collection/create', methods=['GET', 'POST'])
 def collection_create():

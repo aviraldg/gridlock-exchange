@@ -3,9 +3,10 @@ from flask.ext.wtf import Form, TextField, PasswordField, TextAreaField, \
 from flask.ext.wtf import html5, file
 from flask.ext.login import current_user
 from wtforms import ValidationError
+from wtforms.widgets import TextInput
 from wtforms.fields.core import SelectField
 from wtforms.fields.simple import HiddenField
-from wtforms.validators import number_range, required, equal_to
+from wtforms.validators import number_range, required, equal_to, regexp, optional
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 __author__ = 'aviraldg'
@@ -97,3 +98,6 @@ class CollectionForm(Form):
 class UserProfileForm(Form):
     name = TextField(_LT('Name'), validators=[required()],)
     bio = TextAreaField(_LT('Bio'), description='(markdown supported)')
+    ga_id = TextField(_LT('Google Analytics ID'), description='eg. UA-XXXXX-X',
+                      validators=[optional(), regexp(r'^UA\-\d+\-\d+$',
+                                                     message='Please enter a valid GA ID (UA-XXXXXX-YY)')])

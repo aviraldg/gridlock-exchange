@@ -17,8 +17,8 @@ loadPage = (url) ->
           else
             $(@).fadeIn()
             $('select').chosen() # Initialize Chosen (for better select widgets)
-
-
+            ga_ids = $('div[gaid]').map(-> $(this).attr('gaid')).get()
+            track(ga_ids)
 
 loadSearchTimeout = null
 prevQuery = ''
@@ -34,6 +34,15 @@ loadSearch = (query) ->
       history.replaceState {'url': url}, '', url
     , 1000
     prevQuery = query
+
+window.track = (ga_ids) ->
+  _gaq = window._gaq or []
+  # Track using the default account
+  _gaq.push ['_trackPageview']
+  for ga_id in ga_ids
+    # Track using the user GA IDs
+    _gaq.push ['ut._setAccount', ga_id]
+    _gaq.push ['ut._trackPageview']
 
 $ ->
   $('select').chosen() # Initialize Chosen (for better select widgets)
