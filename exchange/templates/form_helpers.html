@@ -45,3 +45,8 @@
         {% endif %}
     </span>
 {% endmacro %}
+
+{% macro render_avatar(user_profile, size=32, class='img-polaroid') %}
+    <img class="{{ class }}" src="{{ user_profile.email|gravatar_url(size) }}"
+         alt="{{ _('Avatar of') }}{{ user_profile.display_name }}">
+{% endmacro %}

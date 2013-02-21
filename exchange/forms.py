@@ -64,8 +64,10 @@ class ItemForm(Form):
 class ItemDeleteForm(Form):
     pass # This form is only used for CSRF protection.
 
+
 class UserDeactivateForm(Form):
     pass # This form is only used for CSRF protection.
+
 
 class UserDeleteForm(Form):
     username = TextField(_LT('Username'), validators=[required()])
@@ -74,16 +76,24 @@ class UserDeleteForm(Form):
         if field.data != current_user.username:
             raise ValidationError(_LT('The username entered must match your username exactly.'))
 
+
 class MessageSendForm(Form):
     subject = HiddenField(_LT('Subject'), default='')
     to = TextField(_LT('To'), validators=[required()], description=(_LT('(comma separated emails)')))
     message = TextField(_LT('Message'))
 
+
 class FeedbackForm(Form):
     rating = SelectField(_LT('Rating'), choices=zip(range(1, 6), range(1, 6)), validators=[required()], coerce=int)
     feedback = TextAreaField(_LT('Feedback'))
+
 
 class CollectionForm(Form):
     title = TextField(_LT('Title'), validators=[required()])
     description = TextAreaField(_LT('Description'))
     item_ids = SelectMultipleField(_LT('Items'), choices=[], coerce=int)
+
+
+class UserProfileForm(Form):
+    name = TextField(_LT('Name'), validators=[required()],)
+    bio = TextAreaField(_LT('Bio'), description='(markdown supported)')

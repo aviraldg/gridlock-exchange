@@ -126,6 +126,8 @@ import urllib
 class UserProfile(ndb.Model):
     name = ndb.StringProperty()
     email = ndb.StringProperty()
+    bio = ndb.StringProperty(default='')
+    bio_rendered = ndb.ComputedProperty(lambda self: markdown(self.bio, output_format='html5', safe_mode='escape'))
     active = ndb.BooleanProperty(default=True)
 
     @property

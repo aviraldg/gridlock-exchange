@@ -1,7 +1,49 @@
+{% import "form_helpers.html" as form_helpers %}
 {% extends "base.html" %}
 {% block content %}
-    {% include "user/user.fragment.html" %}
-    {% if current_user == user_profile %}
-        <a href="{{ url_for('data_liberation') }}" class="btn btn-inverse" no-jqload>Export Data</a>
+    <div class="alert alert-info fade in">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Note:</strong> You can change your avatar at <a href="http://www.gravatar.com">Gravatar</a>.
+    </div>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="{{ user_profile.url() }}">
+                {{ form_helpers.render_avatar(user_profile, size=24, class="") }}
+                {{ user_profile.display_name }}
+            </a>
+            <div class="pull-right">
+                {% if user_profile.editable_by(current_user) %}
+                    <form method="POST" action="{{ url_for('user_deactivate', id=user_profile.get_id()) }}"
+                          style="display: inline">
+                        {{ user_deactivate_form.csrf_token }}
+                        {% if user_profile.active %}
+                            <input type="submit" class="btn btn-warning" value="{{ _('Deactivate') }}">
+                        {% else %}
+                            <input type="submit" class="btn btn-success" value="{{ _('Activate') }}">
+                        {% endif %}
+                    </form>
+                    <a class="btn btn-danger" href="{{ url_for('user_delete', id=user_profile.get_id()) }}">{{ _('Delete') }}</a>
+                {% endif %}
+                {% if current_user == user_profile %}
+                    <a href="{{ url_for('data_liberation') }}" class="btn btn-inverse" no-jqload>Export Data</a>
+                {% else %}
+                    <a href="{{ url_for('message_send', to=user_profile.email) }}" class="btn btn-success">{{ _('Message') }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if user_profile_form %}
+        {% call form_helpers.render_form(user_profile_form, request.url) %}
+            <input type="submit" class="btn btn-primary" value="{{ _('Update Profile') }}">
+            <a class="btn" href="javascript:history.back()">{{ _('Cancel') }}</a>
+        {% endcall %}
+    {% else %}
+        <p>
+            <strong>{{ _('Name') }}</strong>: {{ user_profile.display_name }}
+        </p>
+        <div class="well">
+            {{ user_profile.bio_rendered|safe }}
+        </div>
     {% endif %}
+    {#{% include "user/user.fragment.html" %}#}
 {% endblock %}

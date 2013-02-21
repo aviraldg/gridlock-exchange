@@ -92,19 +92,19 @@ def logout():
     except ValidationError:
         abort(403)
 
-@app.route('/profile')
-@app.route('/profile/<int:profile_id>')
-def profile(profile_id = None):
-    """
-    Shows the profile associated with profile_id, or for the current user if
-    that is None. In case no profile exists, a profile creation form is shown.
-    """
-
-    content = {
-        'form': forms.UserProfileForm()
-    }
-
-    return render_template('profile.html', **content)
+# @app.route('/profile')
+# @app.route('/profile/<int:profile_id>')
+# def profile(profile_id = None):
+#     """
+#     Shows the profile associated with profile_id, or for the current user if
+#     that is None. In case no profile exists, a profile creation form is shown.
+#     """
+#
+#     content = {
+#         'form': forms.UserProfileForm()
+#     }
+#
+#     return render_template('profile.html', **content)
 
 
 @app.route('/item/create', methods=['GET', 'POST'])
@@ -235,10 +235,21 @@ def user_index():
     users_profiles = UserProfile.query().fetch(10)
     return render_template('user/index.html', user_profiles=users_profiles)
 
-@app.route('/user/u/<string:id>/')
+@app.route('/user/u/<string:id>/', methods=['GET', 'POST'])
 def user(id):
     user_profile = UserProfile.get_or_404(id)
-    return render_template('user/user.html', user_profile=user_profile)
+    if user_profile.editable_by(current_user):
+        user_profile_form = forms.UserProfileForm(name=user_profile.display_name,
+                                                  bio=user_profile.bio or '')
+        if user_profile_form.validate_on_submit():
+            user_profile.name = user_profile_form.name.data
+            user_profile.bio = user_profile_form.bio.data
+            user_profile.put()
+            flash(_LT('Your profile has been updated!'), 'success')
+    else:
+        user_profile_form = None
+
+    return render_template('user/user.html', user_profile=user_profile, user_profile_form=user_profile_form)
 
 @app.route('/user/u/<string:id>/deactivate', methods=['POST'])
 @condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))
