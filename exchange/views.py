@@ -143,9 +143,10 @@ def item_index():
     # TODO Partial-match search
 
     orderings = Item.get_orderings()
-    ordering = request.args.get('o', '-created')
+    # HACK
+    ordering = request.args.get('o', 'created (descending)')
     if ordering not in orderings.keys():
-        ordering = '-created'
+        ordering = 'created (descending)'
     current_ordering = orderings.get(ordering)
 
     if 'q' in request.args:

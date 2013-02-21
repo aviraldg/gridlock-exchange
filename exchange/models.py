@@ -287,8 +287,8 @@ class Item(ndb.Model):
     def get_orderings(cls):
         props = dict()
         for prop_name in ('title', 'description', 'created', 'expiry'):
-            props[prop_name] = getattr(cls, prop_name)
-            props['-' + prop_name] = -getattr(cls, prop_name)
+            props[prop_name + ' (ascending)'] = getattr(cls, prop_name)
+            props[prop_name + ' (descending)'] = -getattr(cls, prop_name)
         return props
 
     @property
