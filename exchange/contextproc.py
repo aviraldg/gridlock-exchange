@@ -34,6 +34,13 @@ def bootstrap():
 
     flash(_T('The app was bootstrapped (first run only); please reload the page.'))
 
+@app.after_request
+def add_csp(resp):
+    resp.headers['X-Content-Security-Policy'] = "default-src 'self'; img-src *; media-src *;" \
+                                                " script-src ajax.googleapis.com apis.google.com" \
+                                                " www.google-analytics.com plusone.google.com"
+    return resp
+
 @app.context_processor
 def inject_globals():
     inject = {
