@@ -4,7 +4,8 @@ from . import app
 from flask import request, jsonify
 from flask.ext.login import current_user
 from .utils import ItemQuery, split_xid
-from .models import Item
+from .models import Item, UserProfile
+from google.appengine.ext import ndb
 
 
 @app.route('/webservices/')
@@ -51,3 +52,38 @@ def item():
         return jsonify(success=False, message='0 access denied (item cannot be viewed by current client)')
 
     return jsonify(success=True, **(item.as_pyo()))
+
+@app.route('/webservices/user_import', methods=['GET', 'POST'])
+def user_import():
+    # TODO XXX Check if this auth token has required permissions/rate limit.
+    if 'auth_token' not in request.args:
+        return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')
+
+    if 'user_data' not in request.args:
+        return jsonify(success=False, message='1 no user data provided')
+
+    # TODO XXX Run this in a transaction.
+    data = request.args.get('user_data')
+
+    # create user
+    # NOTE We're trusting that the values from the remote service will be correct ie. no validation here
+    # This is probably less robust than it should be. TODO Clarify & modify?
+    profile = UserProfile.for_user(data['user_id'])
+    profile.bio = data['bio']
+    profile.name = data['name']
+    profile.ga_id = data['ga_id']
+    # other user props
+    profile.put_async()
+
+    items = []
+
+    for item_desc in data['items']:
+        item = Item(**item_desc)
+        item.seller_id = profile.get_id()
+        items.append(item)
+
+    ndb.put_multi_async(items)
+
+    # if everything above succeeded
+    return jsonify(success=True)
+
