@@ -101,3 +101,4 @@ class UserProfileForm(Form):
     ga_id = TextField(_LT('Google Analytics ID'), description='eg. UA-XXXXX-X',
                       validators=[optional(), regexp(r'^UA\-\d+\-\d+$',
                                                      message='Please enter a valid GA ID (UA-XXXXXX-YY)')])
+    app_key = TextField(_LT('App Key'), description='(edit to reset)')

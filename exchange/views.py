@@ -251,11 +251,15 @@ def user(id):
     if user_profile.editable_by(current_user):
         user_profile_form = forms.UserProfileForm(name=user_profile.display_name,
                                                   bio=user_profile.bio or '',
-                                                  ga_id=user_profile.ga_id)
+                                                  ga_id=user_profile.ga_id,
+                                                  app_key=user_profile.app_key)
         if user_profile_form.validate_on_submit():
             user_profile.name = user_profile_form.name.data
             user_profile.bio = user_profile_form.bio.data
             user_profile.ga_id = user_profile_form.ga_id.data
+            if user_profile.app_key != user_profile_form.app_key.data:
+                user_profile.reset_app_key()
+                user_profile_form.app_key.data = user_profile.app_key
             user_profile.put()
             flash(_LT('Your profile has been updated!'), 'success')
     else:

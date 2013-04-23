@@ -18,6 +18,7 @@ import notify
 import json
 import urllib
 import logging
+import uuid
 from flask.ext.babel import gettext as _T, lazy_gettext as _LT
 
 # No longer used with Google's Users Service
@@ -132,6 +133,16 @@ class UserProfile(ndb.Model):
     bio_rendered = ndb.ComputedProperty(lambda self: markdown(self.bio, output_format='html5', safe_mode='escape'))
     active = ndb.BooleanProperty(default=True)
     ga_id = ndb.StringProperty()
+    raw_app_key = ndb.StringProperty(default='-')
+
+    @property
+    def app_key(self):
+        if not self.raw_app_key or self.raw_app_key == '-':
+            self.raw_app_key = uuid.uuid4().get_hex()
+        return self.raw_app_key
+
+    def reset_app_key(self):
+        self.raw_app_key = uuid.uuid4().get_hex()
 
     @property
     def display_name(self):
