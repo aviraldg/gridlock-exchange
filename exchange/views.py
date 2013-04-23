@@ -248,6 +248,10 @@ def user_index():
 @app.route('/user/u/<string:id>/', methods=['GET', 'POST'])
 def user(id):
     user_profile = UserProfile.get_or_404(id)
+    app_config_form = None
+    if current_user.has_role('admin'):
+        app_config_form = forms.AppConfigForm()
+
     if user_profile.editable_by(current_user):
         user_profile_form = forms.UserProfileForm(name=user_profile.display_name,
                                                   bio=user_profile.bio or '',
@@ -266,7 +270,7 @@ def user(id):
         user_profile_form = None
 
     return render_template('user/user.html', user_profile=user_profile, user_profile_form=user_profile_form,
-                           title=user_profile.display_name)
+                           title=user_profile.display_name, app_config_form=app_config_form)
 
 @app.route('/user/u/<string:id>/deactivate', methods=['POST'])
 @condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))

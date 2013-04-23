@@ -45,5 +45,18 @@
             {{ user_profile.bio_rendered|safe }}
         </div>
     {% endif %}
+    {% if app_config_form and current_user.has_role('admin') %}
+        <div class="navbar">
+            <div class="navbar-inner">
+                <span class="brand">
+                    App Config
+                </span>
+            </div>
+        </div>
+        {% call form_helpers.render_form(app_config_form, request.url) %}
+            <input type="submit" class="btn btn-primary" value="{{ _('Update') }}">
+            <a class="btn" href="javascript:history.back()">{{ _('Cancel') }}</a>
+        {% endcall %}
+    {% endif %}
     {#{% include "user/user.fragment.html" %}#}
 {% endblock %}

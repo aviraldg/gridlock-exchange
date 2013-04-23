@@ -102,3 +102,18 @@ class UserProfileForm(Form):
                       validators=[optional(), regexp(r'^UA\-\d+\-\d+$',
                                                      message='Please enter a valid GA ID (UA-XXXXXX-YY)')])
     app_key = TextField(_LT('App Key'), description='(edit to reset)')
+
+class AppConfigForm(Form):
+    search_rate = TextField(_LT('Search API Ratelimit'), validators=[required()],
+                            description='(per minute; 0 to disable)')
+    message_rate = TextField(_LT('Message API Ratelimit'), validators=[required()],
+                             description='(per minute; 0 to disable)')
+    itemfetch_rate = TextField(_LT('Item Fetch API Ratelimit'), validators=[required()],
+                               description='(per minute; 0 to disable)')
+    ratings_rate = TextField(_LT('Ratings API Ratelimit'), validators=[required()],
+                             description='(per minute; 0 to disable)')
+    suggest_rate = TextField(_LT('Search Suggestions API Ratelimit'), validators=[required()],
+                               description='(per minute; 0 to disable)')
+    migrate_rate = TextField(_LT('Migrations API Ratelimit'), validators=[required()],
+                             description='(per minute; 0 to disable)')
+
