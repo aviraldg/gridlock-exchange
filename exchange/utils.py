@@ -139,3 +139,13 @@ def to_fieldstorage(f):
     fs.disposition_options = opt
     fs.type_options = opt
     return fs
+
+def split_xid(xid):
+    """
+    Splits an external ID into an id, slug pair
+    :param xid:
+    :return:
+    """
+
+    id_end = xid.find('$')
+    return int(xid[:id_end]), xid[id_end+1:]
