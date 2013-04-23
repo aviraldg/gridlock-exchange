@@ -43,7 +43,7 @@ class ItemQuery:
         return ItemQuery(query, ordering, 'query', cursor_string)
 
 
-    def fetch(self, count=10):
+    def fetch(self, count=10, offset=None):
         """
         Fetch `count` items from the query/search results.
 
@@ -55,14 +55,24 @@ class ItemQuery:
             cursor = search.Cursor(web_safe_string=self.cursor_string, per_result=True)
 
             while count > 0:
-                results = Item.index.search(search.Query(self.query,
-                                                         options=search.QueryOptions(
-                                                             limit=ItemQuery.FETCH_BATCH_SIZE,
-                                                             cursor=cursor,
-                                                             sort_options=search.SortOptions(
-                                                                 [self.ordering], limit=1000
-                                                             )
-                                                         )))
+                if offset:
+                    results = Item.index.search(search.Query(self.query,
+                                                             options=search.QueryOptions(
+                                                                 limit=ItemQuery.FETCH_BATCH_SIZE,
+                                                                 offset=offset,
+                                                                 sort_options=search.SortOptions(
+                                                                     [self.ordering], limit=1000
+                                                                 )
+                                                             )))
+                else:
+                    results = Item.index.search(search.Query(self.query,
+                                                             options=search.QueryOptions(
+                                                                 limit=ItemQuery.FETCH_BATCH_SIZE,
+                                                                 cursor=cursor,
+                                                                 sort_options=search.SortOptions(
+                                                                     [self.ordering], limit=1000
+                                                                 )
+                                                             )))
                 if len(results.results) == 0:
                     return items, None, False
                 r_items = ndb.get_multi([ndb.Key(Item, long(result.doc_id)) for result in results.results])
@@ -76,7 +86,7 @@ class ItemQuery:
 
                 cursor = results.results[i].cursor
 
-            return items, cursor.web_safe_string, True
+            return items, cursor.web_safe_string if cursor else None, True
         elif self.type == 'query':
             items = []
             results = Item.query(*(self.query if self.query else []),

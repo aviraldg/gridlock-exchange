@@ -288,6 +288,15 @@ class Item(ndb.Model):
     _search_fields = ('title', 'description')
     keywords = ndb.StructuredProperty(Keyword, repeated=True)
 
+    def as_pyo(self):
+        return {
+            'description': self.description,
+            'created': self.created.isoformat(),
+            'expiry': self.expiry.isoformat() if self.expiry else None,
+            'image': url_for('blob', key=self.image) if self.image else None,
+            'price': str(self.price),
+        }
+
     @classmethod
     def get_orderings(cls):
         props = dict()

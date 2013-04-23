@@ -454,3 +454,4 @@ def mail(address):
     message = InboundEmailMessage(request.data)
     return '' if notify.handle_inbound_email(address, message) else abort(500)
 
+from api import *
