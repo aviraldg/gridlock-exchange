@@ -53,7 +53,7 @@
                 </span>
             </div>
         </div>
-        {% call form_helpers.render_form(app_config_form, request.url) %}
+        {% call form_helpers.render_form(app_config_form, url_for('user_appconfig', id=user_profile.get_id())) %}
             <input type="submit" class="btn btn-primary" value="{{ _('Update') }}">
             <a class="btn" href="javascript:history.back()">{{ _('Cancel') }}</a>
         {% endcall %}

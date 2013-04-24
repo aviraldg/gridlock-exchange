@@ -135,6 +135,15 @@ class UserProfile(ndb.Model):
     ga_id = ndb.StringProperty()
     raw_app_key = ndb.StringProperty(default='-')
 
+    appconfig = ndb.JsonProperty(default={
+        'search': 0,
+        'item': 0,
+        'user_import': 0,
+        'send_message': 0,
+        'search_suggestions': 0,
+        'review': 0
+    })
+
     @property
     def app_key(self):
         if not self.raw_app_key or self.raw_app_key == '-':
@@ -646,4 +655,3 @@ class Collection(ndb.Model):
     @items.setter
     def items(self, items):
         self.item_keys = [item.key for item in items]
-

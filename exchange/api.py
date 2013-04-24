@@ -7,8 +7,40 @@ from .utils import ItemQuery, split_xid, conv_ext_ordering
 from .models import Item, UserProfile, Message, ExternalUserProfile
 from google.appengine.ext import ndb
 from google.appengine.api.search import SortExpression
+from google.appengine.api import memcache
 import json
+import time
 
+
+def can_do(method, auth_token):
+    try:
+        appconfig = UserProfile.query(UserProfile.raw_app_key == auth_token).fetch(1)[0].appconfig
+    except: # FIXME
+        return False
+
+    leftquota = memcache.get('$'.join([auth_token, method, 'leftquota']))
+    if leftquota == None:
+        leftquota = appconfig.get(method, 0)
+        memcache.set('$'.join([auth_token, method, 'leftquota']), leftquota)
+    else:
+        leftquota = int(leftquota)
+
+    lastcall = memcache.get('$'.join([auth_token, method, 'lastcall']))
+    if lastcall:
+        lastcall = int(lastcall)
+
+    if lastcall == None or (time.time() - lastcall) >= 60:
+        leftquota = int(appconfig.get(method, 0))
+        memcache.set('$'.join([auth_token, method, 'leftquota']), leftquota)
+
+    if lastcall == None:
+        lastcall = time.time()
+        memcache.set('$'.join([auth_token, method, 'lastcall']), lastcall)
+
+    if leftquota <= 0:
+        return False
+    else:
+        return True
 
 @app.route('/webservices/')
 def webservices():
@@ -17,7 +49,7 @@ def webservices():
 @app.route('/webservices/search')
 def search():
     # TODO XXX Check if this auth token has required permissions/rate limit.
-    if 'auth_token' not in request.args:
+    if ('auth_token' not in request.args) or (not can_do('search', request.args['auth_token'])):
         return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')
 
     try:
@@ -44,7 +76,7 @@ def search():
             things.append(SortExpression(expression=attr, direction=dir))
         ordering = things
     else:
-        ordering = [SortExpression(expresion='created', direction=search.SortExpression.DESCENDING)]
+        ordering = [SortExpression(expression='created', direction=SortExpression.DESCENDING)]
         #ordering = Item.get_search_orderings().get('created (descending)')
     iq = ItemQuery.search(query.strip().lower(), ordering)
     items, cursor, more = iq.fetch(count=limit, offset=offset)

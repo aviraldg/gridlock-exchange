@@ -250,7 +250,13 @@ def user(id):
     user_profile = UserProfile.get_or_404(id)
     app_config_form = None
     if current_user.has_role('admin'):
-        app_config_form = forms.AppConfigForm()
+        app_config_form = forms.AppConfigForm(search_rate=user_profile.appconfig.get('search'))
+        app_config_form.itemfetch_rate.data = user_profile.appconfig.get('item')
+        app_config_form.migrate_rate.data = user_profile.appconfig.get('user_import')
+        app_config_form.message_rate.data = user_profile.appconfig.get('send_message')
+        app_config_form.suggest_rate.data = user_profile.appconfig.get('search_suggestions')
+        app_config_form.ratings_rate.data = user_profile.appconfig.get('review')
+
 
     if user_profile.editable_by(current_user):
         user_profile_form = forms.UserProfileForm(name=user_profile.display_name,
@@ -271,6 +277,30 @@ def user(id):
 
     return render_template('user/user.html', user_profile=user_profile, user_profile_form=user_profile_form,
                            title=user_profile.display_name, app_config_form=app_config_form)
+
+@app.route('/user/u/<string:id>/appconfig', methods=['POST'])
+def user_appconfig(id):
+    if not current_user.has_role('admin'):
+        return redirect(url_for('index'))
+
+    user_profile = UserProfile.get_or_404(id)
+
+    appconfig_form = forms.AppConfigForm()
+
+    if appconfig_form.validate_on_submit():
+
+        user_profile.appconfig = {
+            'search': appconfig_form.search_rate.data,
+            'item': appconfig_form.itemfetch_rate.data,
+            'user_import': appconfig_form.migrate_rate.data,
+            'send_message': appconfig_form.message_rate.data,
+            'search_suggestions': appconfig_form.suggest_rate.data,
+            'review': appconfig_form.ratings_rate.data
+        }
+        user_profile.put()
+
+        return redirect(url_for('index'))
+
 
 @app.route('/user/u/<string:id>/deactivate', methods=['POST'])
 @condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))
