@@ -96,7 +96,7 @@ def new_item_api():
 
 
 @app.route('/webservices/item')
-def item():
+def item_api():
     # TODO XXX Check if this auth token has required permissions/rate limit.
     if 'auth_token' not in request.args:
         return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')

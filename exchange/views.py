@@ -314,6 +314,22 @@ def user_appconfig(id):
         return redirect(url_for('index'))
 
 
+# TODO FIXME make this POST only + CSRF PROTECTION
+@app.route('/user/u/<string:id>/migrate', methods=['GET', 'POST'])
+@condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))
+def user_migrate(id):
+    user_profile = UserProfile.get_or_404(id)
+    apiclient.user_import_client('https://ceciliasecucsb.appspot.com',
+                                 'fa2a4c3ecf732d15b32df246371d69cb94bd4679',
+                                 user_profile)
+
+    # apiclient.user_import_client('https://syscan-buybase.appspot.com',
+    #                              '11BB3F480D328E6190ECE40CC19965D29A84139996C6B0FD00BF2A34155E4BB7',
+    #                              user_profile)
+
+
+
+
 @app.route('/user/u/<string:id>/deactivate', methods=['POST'])
 @condition_required(lambda id: UserProfile.get_or_404(id).editable_by(current_user))
 def user_deactivate(id):

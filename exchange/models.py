@@ -144,6 +144,15 @@ class UserProfile(ndb.Model):
         'review': 0
     })
 
+    def as_pyo(self):
+        return {
+            'google_user_id': self.key.id(),
+            'name': self.name,
+            'email': self.email,
+            'bio': self.bio_rendered,
+            'ga_id': self.ga_id,
+        }
+
     @property
     def app_key(self):
         if not self.raw_app_key or self.raw_app_key == '-':
@@ -371,7 +380,7 @@ class Item(ndb.Model):
             'created': self.created.isoformat(),
             'expiry': self.expiry.isoformat() if self.expiry else None,
             'image': url_for('blob', key=self.image) if self.image else None,
-            'price': str(self.price),
+            'price': float(str(self.price)[1:]),
             'rating': self.average_rating,
             'seller': {
                 'id': self.seller_id,
