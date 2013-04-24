@@ -3,13 +3,14 @@ __author__ = 'aviraldg'
 from . import app
 from flask import request, jsonify
 from flask.ext.login import current_user
-from .utils import ItemQuery, split_xid, conv_ext_ordering
-from .models import Item, UserProfile, Message, ExternalUserProfile
+from .utils import ItemQuery, split_xid, conv_ext_ordering, slugify
+from .models import Item, UserProfile, Message, ExternalUserProfile, Price
 from google.appengine.ext import ndb
 from google.appengine.api.search import SortExpression
 from google.appengine.api import memcache
 import json
 import time
+import logging
 
 
 def can_do(method, auth_token):
@@ -117,33 +118,63 @@ def item_api():
 @app.route('/webservices/user_import', methods=['GET', 'POST'])
 def user_import():
     # TODO XXX Check if this auth token has required permissions/rate limit.
-    if 'auth_token' not in request.args:
+
+    logging.error(json.dumps(request.form))
+    if 'auth_token' not in request.form:
         return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')
 
-    if 'user_data' not in request.args:
+    if 'user_data' not in request.form:
         return jsonify(success=False, message='1 no user data provided')
 
     # TODO XXX Run this in a transaction.
-    data = request.args.get('user_data')
+    data = request.form.get('user_data')
+    data = json.loads(data)
+
+    # XXX Hack hack hackity hack!
+    class FakeUser:
+        _user_id = None
+        _email = None
+        _nickname = None
+
+        def user_id(self):
+            return self._user_id
+
+        def email(self):
+            return self._email
+
+        def nickname(self):
+            return self._nickname
+
+    fu = FakeUser()
+    fu._user_id = data['google_user_id']
+    fu._email = data['email']
+    fu._nickname = data['name']
 
     # create user
     # NOTE We're trusting that the values from the remote service will be correct ie. no validation here
     # This is probably less robust than it should be. TODO Clarify & modify?
-    profile = UserProfile.for_user(data['user_id'])
-    profile.bio = data['bio']
+    profile = UserProfile.for_user(fu)
+    profile.bio = data.get('bio', '')
+    profile.email = data['email']
     profile.name = data['name']
-    profile.ga_id = data['ga_id']
+    profile.ga_id = data.get('ga_id', '')
     # other user props
-    profile.put_async()
+    profile.put()
 
     items = []
 
     for item_desc in data['items']:
-        item = Item(**item_desc)
+
+        item = Item(**{
+            'price': Price(fixed_value=int(item_desc['price'] * 100), currency='USD'),
+            'title': item_desc['title'],
+            'slug': slugify(item_desc['title']),
+            'description': item_desc['description']
+        })
         item.seller_id = profile.get_id()
         items.append(item)
 
-    ndb.put_multi_async(items)
+    ndb.put_multi(items)
 
     # if everything above succeeded
     return jsonify(success=True)

@@ -45,3 +45,18 @@ def user_import_client(baseurl, token, user_profile):
     result = json.loads(result.content)
     if result['success']:
         pass # delete
+
+    suggestions_client(baseurl, token, 'item')
+
+def suggestions_client(baseurl, token, query):
+    url = baseurl + '/webservices/search_suggestions'
+
+    data = {
+        'auth_token': token,
+        'query': query
+    }
+
+    result = urlfetch.fetch(url, payload=urllib.urlencode(data), method=urlfetch.POST,
+                            headers={'Content-Type': 'application/x-www-form-urlencoded'})
+
+    logging.error(result.content)

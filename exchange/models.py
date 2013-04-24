@@ -374,7 +374,7 @@ class Item(ndb.Model):
 
     def as_pyo(self):
         return {
-            'id': str(self.key),
+            'id': '$'.join([str(self.key.id()),self.slug]),
             'title': self.title,
             'description': self.description,
             'created': self.created.isoformat(),
