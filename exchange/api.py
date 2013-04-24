@@ -85,6 +85,16 @@ def search():
                    message='- success',
                    items=[item.as_pyo() for item in items])
 
+@app.route('/webservices/new_item')
+def new_item_api():
+    # TODO XXX Check if this auth token has required permissions/rate limit.
+    if 'auth_token' not in request.args:
+        return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')
+
+    return jsonify(success=False,
+                   message='- not implemented yet')
+
+
 @app.route('/webservices/item')
 def item():
     # TODO XXX Check if this auth token has required permissions/rate limit.

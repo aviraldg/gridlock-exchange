@@ -162,6 +162,7 @@ def item_index():
         iq = ItemQuery.search(request.args['q'].strip().lower(), current_ordering)
 
         # external results
+        # TODO FIXME
         r = apiclient.search('https://syscan-buybase.appspot.com',
                          '11BB3F480D328E6190ECE40CC19965D29A84139996C6B0FD00BF2A34155E4BB7',
                          query='abyss', limit=1)
