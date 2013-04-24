@@ -32,7 +32,10 @@ def search():
     ordering = Item.get_search_orderings().get('created (descending)')
     iq = ItemQuery.search(query.strip().lower(), ordering)
     items, cursor, more = iq.fetch(count=limit, offset=offset)
-    return jsonify(success=True, items=[item.as_pyo() for item in items])
+    return jsonify(total=offset+(1 if more else 0),
+                   success=True,
+                   message='- success',
+                   items=[item.as_pyo() for item in items])
 
 @app.route('/webservices/item')
 def item():

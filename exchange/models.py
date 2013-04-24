@@ -13,7 +13,7 @@ from flask.ext.login import AnonymousUser
 from hashlib import sha512
 from . import app, login_manager
 from markdown import markdown
-from google.appengine.api import urlfetch
+from google.appengine.api import urlfetch, app_identity
 import notify
 import json
 import urllib
@@ -356,12 +356,19 @@ class Item(ndb.Model):
 
     def as_pyo(self):
         return {
+            'id': str(self.key),
             'title': self.title,
             'description': self.description,
             'created': self.created.isoformat(),
             'expiry': self.expiry.isoformat() if self.expiry else None,
             'image': url_for('blob', key=self.image) if self.image else None,
             'price': str(self.price),
+            'rating': self.average_rating,
+            'seller': {
+                'id': self.seller_id,
+                'username': self.seller.display_name
+            },
+            'url': self.url(absolute=True)
         }
 
     @classmethod
@@ -384,7 +391,7 @@ class Item(ndb.Model):
 
     @property
     def average_rating(self):
-        return FeedbackAggregate.for_key(self.key).average_rating
+        return FeedbackAggregate.get_or_create(self.key).average_rating
 
     @staticmethod
     def _keywordize(value):
@@ -429,8 +436,9 @@ class Item(ndb.Model):
     def __repr__(self):
         return 'Item: %s' % str(self)
 
-    def url(self):
-        return url_for('item', id=self.key.id(), slug=self.slug)
+    def url(self, absolute=False):
+        return (app_identity.get_default_version_hostname() if absolute else '') + \
+               url_for('item', id=self.key.id(), slug=self.slug)
 
     def editable_by(self, user_profile):
         return user_profile.get_id() == unicode(self.seller_id) or user_profile.has_role('admin')
@@ -560,7 +568,7 @@ class FeedbackAggregate(ndb.Model):
     target = ndb.KeyProperty()
     count = ndb.IntegerProperty(default=0)
     total_rating = ndb.IntegerProperty(default=0)
-    average_rating = ndb.ComputedProperty(lambda self: self.total_rating / self.count)
+    average_rating = ndb.ComputedProperty(lambda self: self.total_rating / self.count if self.count > 0 else 0)
     i_keys = ndb.KeyProperty(repeated=True)
 
     @staticmethod
@@ -572,6 +580,7 @@ class FeedbackAggregate(ndb.Model):
         fa = FeedbackAggregate.get_by_id(target.urlsafe())
         if fa == None:
             fa = FeedbackAggregate(id=target.urlsafe(), target=target)
+            fa.put()
         return fa
 
     def update_rating(self, key, old_rating, new_rating):
