@@ -356,6 +356,7 @@ class Item(ndb.Model):
 
     def as_pyo(self):
         return {
+            'title': self.title,
             'description': self.description,
             'created': self.created.isoformat(),
             'expiry': self.expiry.isoformat() if self.expiry else None,

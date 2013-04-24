@@ -133,9 +133,9 @@ def search_suggestions():
         return jsonify(success=False, message='1 no query provided')
 
     # TODO limit
-    results = Item.query(ndb.AND(Item.title >= query.upper(), Item.title <= query[:-1]+unichr(0xFFFF)))
+    results = Item.query(ndb.AND(Item.title >= query.upper(), Item.title < query+unichr(0xFFFF))).fetch(10)
 
     return jsonify({
         'success': True,
-        'items': [result.as_pyo for result in results]
+        'items': [result.as_pyo() for result in results]
     })
