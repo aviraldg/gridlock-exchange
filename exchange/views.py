@@ -2,7 +2,8 @@ __author__ = 'aviraldg'
 
 from flask import request, render_template, flash, redirect, url_for, abort, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from google.appengine.api import search, users
+from google.appengine.api import users
+from google.appengine.api.search import QueryError
 from google.appengine.api.mail import InboundEmailMessage
 import datetime
 from . import app
@@ -16,6 +17,7 @@ from wtforms import ValidationError
 from google.appengine.ext import blobstore, ndb
 import notify
 import logging
+import apiclient
 
 
 @app.route('/')
@@ -148,22 +150,31 @@ def item_index():
     if ordering not in orderings.keys():
         ordering = 'created (descending)'
 
+    ext_results = []
 
     if 'q' in request.args:
         orderings = Item.get_search_orderings()
-        current_ordering = orderings.get(ordering)
+        current_ordering = [orderings.get(ordering)]
         if request.args['q'].strip().lower() == 'htcpcp':
             abort(418, TEAPOT)
         elif request.args['q'].strip().lower() == 'about:credits':
             return redirect('/humans.txt')
         iq = ItemQuery.search(request.args['q'].strip().lower(), current_ordering)
+
+        # external results
+        r = apiclient.search('https://syscan-buybase.appspot.com',
+                         '11BB3F480D328E6190ECE40CC19965D29A84139996C6B0FD00BF2A34155E4BB7',
+                         query='abyss', limit=1)
+
+        logging.error(r.get_result().content)
+
     else:
         current_ordering = orderings.get(ordering)
         iq = ItemQuery.query(None, current_ordering, request.args.get('c'))
 
     try:
         items, cursor, more = iq.fetch(10)
-    except search.QueryError:
+    except QueryError:
         flash(_T('Sorry, but your query failed.'), 'error')
         return redirect(url_for('index'))
 
