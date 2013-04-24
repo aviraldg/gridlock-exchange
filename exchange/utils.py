@@ -61,7 +61,7 @@ class ItemQuery:
                                                                  limit=ItemQuery.FETCH_BATCH_SIZE,
                                                                  offset=offset,
                                                                  sort_options=search.SortOptions(
-                                                                     [self.ordering], limit=1000
+                                                                     self.ordering, limit=1000
                                                                  )
                                                              )))
                 else:
@@ -70,7 +70,7 @@ class ItemQuery:
                                                                  limit=ItemQuery.FETCH_BATCH_SIZE,
                                                                  cursor=cursor,
                                                                  sort_options=search.SortOptions(
-                                                                     [self.ordering], limit=1000
+                                                                     self.ordering, limit=1000
                                                                  )
                                                              )))
                 if len(results.results) == 0:
@@ -149,3 +149,20 @@ def split_xid(xid):
 
     id_end = xid.find('$')
     return int(xid[:id_end]), xid[id_end+1:]
+
+def conv_ext_ordering(orderobj):
+    orderings = []
+    mapping = {
+        'title': 'title',
+        'price': 'price',
+        'time_created': 'created',
+        'description': 'description'
+    }
+
+    for o in orderobj:
+        native_name = mapping.get(o['type'], None)
+        if native_name is None: continue
+
+        orderings.append(('' if o['ordering']=='desc' else '-') + native_name)
+
+    return orderings if orderings else None

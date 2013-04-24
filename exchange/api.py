@@ -3,9 +3,11 @@ __author__ = 'aviraldg'
 from . import app
 from flask import request, jsonify
 from flask.ext.login import current_user
-from .utils import ItemQuery, split_xid
+from .utils import ItemQuery, split_xid, conv_ext_ordering
 from .models import Item, UserProfile, Message, ExternalUserProfile
 from google.appengine.ext import ndb
+from google.appengine.api.search import SortExpression
+import json
 
 
 @app.route('/webservices/')
@@ -29,7 +31,21 @@ def search():
 
     offset = int(request.args.get('offset', 0))
 
-    ordering = Item.get_search_orderings().get('created (descending)')
+    so = request.args.get('sort_options')
+    if so:
+        things = []
+        for thing in conv_ext_ordering(json.loads(so)):
+            if thing.startswith('-'):
+                dir = SortExpression.DESCENDING
+                attr = thing[1:]
+            else:
+                dir = SortExpression.ASCENDING
+                attr = thing
+            things.append(SortExpression(expression=attr, direction=dir))
+        ordering = things
+    else:
+        ordering = [SortExpression(expresion='created', direction=search.SortExpression.DESCENDING)]
+        #ordering = Item.get_search_orderings().get('created (descending)')
     iq = ItemQuery.search(query.strip().lower(), ordering)
     items, cursor, more = iq.fetch(count=limit, offset=offset)
     return jsonify(total=offset+len(items)+limit*(1 if more else 0),
