@@ -10,7 +10,7 @@ from google.appengine.ext import ndb
 
 @app.route('/webservices/')
 def webservices():
-    return jsonify(version=1, methods=['search', 'item'])
+    return jsonify(version=1, methods=['search', 'item', 'user_import', 'send_message', 'search_suggestions'])
 
 @app.route('/webservices/search')
 def search():
@@ -117,3 +117,25 @@ def send_message():
 
     return jsonify(dict(success=True, conversation_id=str(conv_key)))
 
+
+@app.route('/webservices/search_suggestions')
+def search_suggestions():
+    # TODO XXX Check if this auth token has required permissions/rate limit.
+    if 'auth_token' not in request.args:
+        return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')
+
+    auth_token = request.args['auth_token']
+
+    try:
+        query = request.args['query']
+    except KeyError:
+        # needs a query
+        return jsonify(success=False, message='1 no query provided')
+
+    # TODO limit
+    results = Item.query(ndb.AND(Item.title >= query.upper(), Item.title <= query[:-1]+unichr(0xFFFF)))
+
+    return jsonify({
+        'success': True,
+        'items': [result.as_pyo for result in results]
+    })
