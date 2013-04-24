@@ -4,7 +4,7 @@ from . import app
 from flask import request, jsonify
 from flask.ext.login import current_user
 from .utils import ItemQuery, split_xid
-from .models import Item, UserProfile
+from .models import Item, UserProfile, Message, ExternalUserProfile
 from google.appengine.ext import ndb
 
 
@@ -86,4 +86,34 @@ def user_import():
 
     # if everything above succeeded
     return jsonify(success=True)
+
+@app.route('/webservices/send_message', methods=['GET', 'POST'])
+def send_message():
+    # TODO XXX Check if this auth token has required permissions/rate limit.
+    if 'auth_token' not in request.args:
+        return jsonify(success=False, message='0 access denied (bad auth token or rate limit reached)')
+
+    auth_token = request.args['auth_token']
+
+    topic_item = request.args.get('item_id', None)
+    topic_item = int(topic_item) if topic_item != None else None
+
+    try:
+        source_user_id = request.args['source_user_id']
+        source_user_name = request.args['source_user_name']
+        destination_user_id = request.args['destination_user_id']
+        subject = request.args.get('subject', '')
+        message = request.args['message']
+        source_conversation_id = request.args['source_conversation_id']
+        destination_conversation_id = request.args['destination_conversation_id']
+    except KeyError:
+        return jsonify(success=False, message='1 required argument missing')
+
+    author = ExternalUserProfile.for_ext_id(auth_token, source_user_id, source_user_name)
+    to = [UserProfile.get_or_404(destination_user_id)]
+
+    message_key, conv_key = Message.send(author=author, subject=topic_item, content=message,
+                                         to=to, do_notify=False, extra=source_conversation_id)
+
+    return jsonify(dict(success=True, conversation_id=str(conv_key)))
 

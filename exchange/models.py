@@ -231,6 +231,61 @@ class CustomAnonymousUserProfile(AnonymousUser):
     def is_student(self):
         return False
 
+class ExternalUserProfile(ndb.Model):
+    target_app = ndb.StringProperty()
+    ext_id = ndb.StringProperty()
+    name = ndb.StringProperty()
+    email = ndb.StringProperty()
+    bio = ndb.StringProperty(default='')
+    bio_rendered = ndb.ComputedProperty(lambda self: markdown(self.bio, output_format='html5', safe_mode='escape'))
+    active = ndb.BooleanProperty(default=True)
+    ga_id = ndb.StringProperty()
+    raw_app_key = ndb.StringProperty(default='-')
+
+    @classmethod
+    def for_ext_id(cls, app, id, name=''):
+        p = ExternalUserProfile.query(ndb.AND(ExternalUserProfile.target_app == app,
+                                      ExternalUserProfile.ext_id == id)).fetch(1)
+        if not p:
+            p = ExternalUserProfile(target_app=app,
+                                    ext_id=id,
+                                    name=name)
+            p.put()
+
+        return p
+
+    def has_role(self, role):
+        return False
+
+    def editable_by(self, user):
+        return False
+
+    def is_student(self):
+        return False
+
+    @property
+    def display_name(self):
+        return self.name or (self.key.id() if self.key else '(not saved)')
+
+    def __str__(self):
+        return (self.key.id() if self.key else '(not saved)') or '(not saved)'
+
+    def __repr__(self):
+        return 'UserProfile: %s' % str(self)
+
+    # Flask-Login methods #
+
+    def is_authenticated(self):
+        return False
+
+    def is_active(self):
+        return False
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.key.id())
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -425,6 +480,7 @@ class Conversation(ndb.Model):
     subject = ndb.StringProperty(default='')
     messages = ndb.KeyProperty(repeated=True, kind='Message')
     updated = ndb.DateTimeProperty(auto_now=True)
+    extra = ndb.StringProperty()
 
     def _pre_put_hook(self):
         if self.readable_subject == '':
@@ -463,7 +519,7 @@ class Conversation(ndb.Model):
 
 
 class Message(ndb.Model):
-    author_key = ndb.KeyProperty(kind=UserProfile)
+    author_key = ndb.KeyProperty()
 
     @property
     def author(self):
@@ -474,7 +530,7 @@ class Message(ndb.Model):
     sent = ndb.DateTimeProperty(auto_now_add=True)
 
     @staticmethod
-    def send(author, to, subject, content, do_notify=True):
+    def send(author, to, subject, content, do_notify=True, extra=None):
         author_key = author.key
         to_keys = set(map(lambda t: t.key, to))
 
@@ -484,6 +540,10 @@ class Message(ndb.Model):
         mk = message.put()
 
         conversation.messages.append(message.key)
+
+        if extra:
+            conversation.extra = extra
+
         ck = conversation.put()
 
         logging.info('Sent message from %s to %s (subject: %s)', author_key.get().display_name,
